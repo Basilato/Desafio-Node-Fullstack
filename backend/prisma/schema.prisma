@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  ATTENDANT
+}
+
+enum TicketTypeCategory {
+  INTEIRA
+  MEIA
+  VIP
+  CORTESIA
+}
+
+enum EventCategory {
+  FUTEBOL
+  SHOW
+  TEATRO
+  FESTIVAL
+  ESPORTE
+  OUTRO
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  passwordHash  String
+  role          UserRole @default(MANAGER)
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  eventsCreated Event[] @relation("EventCreator")
+  @@map("users")
+}
+
+model Venue {
+  id          String    @id @default(cuid())
+  name        String
+  capacity    Int
+  address     String
+  city        String?
+  state       String?
+  zipCode     String?
+  email       String?
+  phone       String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  gates       Gate[]
+  events      Event[]
+
+  @@index([name])
+  @@map("venues")
+}
+
+model Gate {
+  id          String   @id @default(cuid())
+  venueId     String
+  name        String
+  identifier  String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  venue       Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  ticketTypes AllowedTicketType[]
+
+  @@unique([venueId, identifier])
+  @@map("gates")
+}
+
+model TicketType {
+  id          String   @id @default(cuid())
+  name        String
+  category    TicketTypeCategory
+  price       Decimal  @db.Decimal(10, 2)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  allowedGates AllowedTicketType[]
+  tickets      Ticket[]
+
+  @@map("ticket_types")
+}
+
+model AllowedTicketType {
+  gateId       String
+  ticketTypeId String
+  createdAt    DateTime @default(now())
+
+  gate       Gate       @relation(fields: [gateId], references: [id], onDelete: Cascade)
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id], onDelete: Cascade)
+
+  @@id([gateId, ticketTypeId])
+  @@map("allowed_ticket_types")
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  category    EventCategory
+  venueId     String
+  startDate   DateTime
+  endDate     DateTime
+  coverImage  String?
+  createdById String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  venue       Venue         @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  createdBy   User          @relation("EventCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  tickets     Ticket[]
+
+  @@index([venueId, startDate])
+  @@index([startDate])
+  @@map("events")
+}
+
+model Ticket {
+  id           String   @id @default(cuid())
+  eventId      String
+  ticketTypeId String
+  holderName   String
+  holderEmail  String?
+  holderDoc    String?
+  seat         String?
+  pricePaid    Decimal  @db.Decimal(10, 2)
+  status       String   @default("ACTIVE") // ACTIVE | USED | CANCELLED | REFUNDED
+  qrCode       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  event        Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id], onDelete: Restrict)
+
+  @@index([eventId])
+  @@map("tickets")
+}

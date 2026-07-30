@@ -1,0 +1,34 @@
+{
+  "name": "onentree-desafio-fullstack",
+  "private": true,
+  "version": "1.0.0",
+  "description": "OnEntree - Sistema de gerenciamento de ingressos e locais de eventos",
+  "scripts": {
+    "install:all": "npm install && npm --prefix frontend install && npm --prefix backend install",
+    "dev:fe": "npm --prefix frontend run dev",
+    "dev:be": "npm --prefix backend run start:dev",
+    "dev": "powershell -Command \"Start-Process npm -ArgumentList 'run','dev:fe' -NoNewWindow; Start-Process npm -ArgumentList 'run','dev:be' -NoNewWindow\"",
+    "build:fe": "npm --prefix frontend run build",
+    "build:be": "npm --prefix backend run build",
+    "build": "npm run build:be && npm run build:fe",
+    "lint:fe": "npm --prefix frontend run lint",
+    "lint:be": "npm --prefix backend run lint",
+    "lint": "npm run lint:fe && npm run lint:be",
+    "typecheck:fe": "npm --prefix frontend exec tsc --noEmit",
+    "typecheck:be": "npm --prefix backend exec tsc --noEmit",
+    "typecheck": "npm run typecheck:fe && npm run typecheck:be",
+    "test:fe": "npm --prefix frontend run test",
+    "test:be": "npm --prefix backend run test",
+    "test": "npm run test:be && npm run test:fe",
+    "prisma:generate": "npm --prefix backend exec prisma generate",
+    "prisma:migrate": "npm --prefix backend exec prisma migrate dev",
+    "prisma:studio": "npm --prefix backend exec prisma studio",
+    "prisma:seed": "npm --prefix backend run seed"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

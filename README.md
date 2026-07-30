@@ -41,11 +41,6 @@ Desenvolver uma aplicação frontend para gerenciar um sistema de gerenciamento 
 4. Implementação de funcionalidades adicionais como busca, filtros e ordenação.
 5. Deploy da aplicação (pode usar Vercel, Netlify, etc.)
     
-## 🗳️ Instruções de Submissão:
-
-1. Faça um fork deste repositório para sua conta pessoal do GitHub.
-2. Commit e push suas mudanças para o seu fork.
-3. Envie um e-mail para [arthur.olga@khipo.com.br] e [alexandre.godoy@khipo.com.br] com o link do repositório.
 
 ## 🧪 Avaliação:
 
@@ -67,9 +62,9 @@ Desenvolver uma aplicação frontend para gerenciar um sistema de gerenciamento 
 
 ### 1. Configuração Inicial:
 
-- Configurar um projeto usando Nest.js e TypeScript ou .NET 7/8.
-- Configurar um banco de dados (Local).
-- Utilizar o Prisma ou Entity Framework como ORM, dependendo da stack escolhida.
+- Configurar um projeto usando Nest.js e TypeScript ou .NET 7/8. ( usar o nestjs e typescript)
+- Configurar um banco de dados (Local). ( vamos usar o supabase )
+- Utilizar o Prisma ou Entity Framework como ORM, dependendo da stack escolhida. ( vamos usar o prisma)
 
 ### 2. Modelo de Dados:
 
@@ -91,12 +86,6 @@ Desenvolver uma aplicação frontend para gerenciar um sistema de gerenciamento 
 - Registro de logs.
 - Dockerização da aplicação.
 - Uso de um linter (como ESLint) e formatador de código (como Prettier).
-
-## 🗳️ Instruções de Submissão:
-
-1. Faça um fork deste repositório para sua conta pessoal do GitHub.
-2. Commit e push suas mudanças para o seu fork.
-3. Envie um e-mail para [arthur.olga@khipo.com.br] e [alexandre.godoy@khipo.com.br] com o link do repositório.
 
 ## 🧪 Avaliação:
 
