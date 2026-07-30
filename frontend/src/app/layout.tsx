@@ -13,13 +13,13 @@ const inter = InterFont({
 });
 
 export const metadata: Metadata = {
-  title: 'OnEntrée · Dashboard',
+  title: 'Localis · Dashboard',
   description:
-    'OnEntrée — Gerencie locais, portões e eventos em um só lugar.',
-  keywords: ['eventos', 'locais', 'ingressos', 'dashboard', 'OnEntrée'],
-  authors: [{ name: 'OnEntrée' }],
+    'Localis — Gerencie locais, portões e eventos em um só lugar.',
+  keywords: ['eventos', 'locais', 'ingressos', 'dashboard', 'Localis'],
+  authors: [{ name: 'Localis' }],
   openGraph: {
-    title: 'OnEntrée · Dashboard',
+    title: 'Localis · Dashboard',
     description:
       'Gerencie locais, portões e eventos em um só lugar.',
     type: 'website',
@@ -45,7 +45,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <footer className="py-8 border-t border-white/5 mt-auto">
               <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-                <p>© {new Date().getFullYear()} OnEntrée · Todos os direitos reservados.</p>
+                <p>© {new Date().getFullYear()} Localis · Todos os direitos reservados.</p>
                 <p className="font-mono">feito com carinho · build {process.env.NEXT_PUBLIC_BUILD_ID ?? 'dev'}</p>
               </div>
             </footer>

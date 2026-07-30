@@ -26,21 +26,21 @@ const toneStyles: Record<StatCardTone, {
 }> = {
   venue: {
     wrapper:
-      'bg-gradient-to-br from-onentree-venue-muted via-onentree-venue to-emerald-950/70 text-onentree-venue-foreground',
+      'bg-gradient-to-br from-localis-venue-muted via-localis-venue to-emerald-950/70 text-localis-venue-foreground',
     iconBox:
       'bg-white/10 text-emerald-100 ring-1 ring-inset ring-white/15',
     button:
-      'bg-white text-onentree-venue hover:bg-emerald-50 shadow-soft hover:-translate-y-0.5',
+      'bg-white text-localis-venue hover:bg-emerald-50 shadow-soft hover:-translate-y-0.5',
     accent: 'from-emerald-300/40 to-transparent',
     label: 'bg-white/10 text-emerald-100',
   },
   event: {
     wrapper:
-      'bg-gradient-to-br from-onentree-event-muted via-onentree-event to-rose-950/70 text-onentree-event-foreground',
+      'bg-gradient-to-br from-localis-event-muted via-localis-event to-rose-950/70 text-localis-event-foreground',
     iconBox:
       'bg-white/10 text-rose-100 ring-1 ring-inset ring-white/15',
     button:
-      'bg-white text-onentree-event hover:bg-rose-50 shadow-soft hover:-translate-y-0.5',
+      'bg-white text-localis-event hover:bg-rose-50 shadow-soft hover:-translate-y-0.5',
     accent: 'from-rose-300/40 to-transparent',
     label: 'bg-white/10 text-rose-100',
   },
@@ -61,7 +61,7 @@ export function DashboardStatCard({
   return (
     <article
       className={cn(
-        'onentree-card-glow group relative overflow-hidden rounded-3xl p-6 md:p-7',
+        'localis-card-glow group relative overflow-hidden rounded-3xl p-6 md:p-7',
         'shadow-2xl transition-all duration-500 hover:shadow-[0_24px_80px_-30px] hover:-translate-y-1',
         s.wrapper,
         className,

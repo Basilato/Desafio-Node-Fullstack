@@ -18,14 +18,14 @@ const toneStyles: Record<SectionTone, {
   cta: string;
 }> = {
   venue: {
-    card: 'onentree-card-glow border-emerald-500/10 bg-onentree-surface/50',
-    titleBar: 'bg-onentree-venue-muted/20 text-onentree-venue-foreground',
+    card: 'localis-card-glow border-emerald-500/10 bg-localis-surface/50',
+    titleBar: 'bg-localis-venue-muted/20 text-localis-venue-foreground',
     titleDot: 'bg-emerald-400 shadow-[0_0_16px] shadow-emerald-400/60',
     cta: 'text-emerald-300 hover:text-emerald-200 hover:bg-emerald-300/5',
   },
   event: {
-    card: 'onentree-card-glow border-rose-500/10 bg-onentree-surface/50',
-    titleBar: 'bg-onentree-event-muted/20 text-onentree-event-foreground',
+    card: 'localis-card-glow border-rose-500/10 bg-localis-surface/50',
+    titleBar: 'bg-localis-event-muted/20 text-localis-event-foreground',
     titleDot: 'bg-rose-400 shadow-[0_0_16px] shadow-rose-400/60',
     cta: 'text-rose-300 hover:text-rose-200 hover:bg-rose-300/5',
   },
@@ -40,6 +40,7 @@ interface RecentSectionProps {
   emptyLabel?: string;
   items: ReactNode[];
   className?: string;
+  headerExtra?: ReactNode;
 }
 
 export function RecentSection({
@@ -51,6 +52,7 @@ export function RecentSection({
   emptyLabel = 'Nenhum item cadastrado ainda.',
   items,
   className,
+  headerExtra,
 }: RecentSectionProps) {
   const s = toneStyles[tone];
   const hasItems = items.length > 0;
@@ -79,12 +81,15 @@ export function RecentSection({
             </p>
           )}
         </div>
-        <Button asChild variant="ghost" size="sm" className={cn('gap-1.5 rounded-full h-9 px-4 font-semibold', s.cta)}>
-          <Link href={seeAllHref}>
-            {seeAllLabel}
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          {headerExtra}
+          <Button asChild variant="ghost" size="sm" className={cn('gap-1.5 rounded-full h-9 px-4 font-semibold', s.cta)}>
+            <Link href={seeAllHref}>
+              {seeAllLabel}
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="p-5 space-y-2.5">
         {hasItems ? (

@@ -39,6 +39,13 @@ export class EventsController {
     return { total };
   }
 
+  @Get('stats/tickets')
+  @ApiOperation({ summary: 'Total de ingressos emitidos (p/ Dashboard)' })
+  async statsTickets() {
+    const total = await this.eventsService.countTicketsTotal();
+    return { total };
+  }
+
   @Get('recent')
   @ApiOperation({ summary: 'Últimos eventos cadastrados (Dashboard)' })
   @ApiQuery({ name: 'limit', required: false, example: 3 })

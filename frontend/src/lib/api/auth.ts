@@ -6,6 +6,7 @@ export interface LoggedUser {
   name: string;
   role: 'ADMIN' | 'MANAGER' | 'ATTENDANT';
   avatarUrl?: string | null;
+  createdAt?: string;
 }
 
 export interface LoginResponse {
@@ -25,4 +26,8 @@ export async function login(email: string, password: string) {
 
 export async function me() {
   return apiFetch<LoggedUser>('/auth/me');
+}
+
+export async function getProfile() {
+  return apiFetch<LoggedUser>('/auth/profile', { skipAuth: true });
 }

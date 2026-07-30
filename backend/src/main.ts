@@ -26,8 +26,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('OnEntrée API')
-    .setDescription('Sistema de gerenciamento de ingressos e locais de eventos')
+    .setTitle('Localis API')
+    .setDescription('Sistema de gerenciamento de locais e eventos')
     .setVersion('1.0.0')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .addTag('Auth')
@@ -43,7 +43,7 @@ async function bootstrap() {
   const port = Number(process.env.PORT ?? 3001);
   await app.listen(port, '0.0.0.0');
   Logger.log(
-    `🚀 OnEntrée Backend running → http://localhost:${port}/${globalPrefix} | Docs → http://localhost:${port}/docs`,
+    `🚀 Localis Backend running → http://localhost:${port}/${globalPrefix} | Docs → http://localhost:${port}/docs`,
     'Bootstrap',
   );
 }

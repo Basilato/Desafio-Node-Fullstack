@@ -43,6 +43,10 @@ export async function getEventsStatsCount() {
   return apiFetch<{ total: number }>('/events/stats/count');
 }
 
+export async function getEventsStatsTickets() {
+  return apiFetch<{ total: number }>('/events/stats/tickets');
+}
+
 export async function listEvents(params?: {
   page?: number;
   perPage?: number;

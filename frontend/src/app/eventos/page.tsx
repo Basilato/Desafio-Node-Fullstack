@@ -137,7 +137,7 @@ export default function EventsPage() {
           </Link>
           <span className="opacity-40">/</span>
           <span className="text-foreground font-semibold inline-flex items-center gap-1.5">
-            <PartyPopper className="h-3.5 w-3.5 text-onentree-event" />
+            <PartyPopper className="h-3.5 w-3.5 text-localis-event" />
             Eventos
           </span>
         </nav>
@@ -145,20 +145,20 @@ export default function EventsPage() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-2.5">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-onentree-event/60 to-rose-900/60 ring-1 ring-white/10">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-localis-event/60 to-rose-900/60 ring-1 ring-white/10">
                 <CalendarDays className="h-4.5 w-4.5 text-rose-100" />
               </span>
               Agenda de eventos
             </h1>
             <p className="text-muted-foreground">
               Crie e gerencie shows, jogos, festivais e tudo mais que vai movimentar os locais
-              da OnEntrée.
+              da Localis.
             </p>
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <Button
-                className="bg-gradient-to-r from-onentree-event to-rose-500 hover:from-onentree-event hover:to-rose-400 text-white shadow-lg shadow-rose-900/30"
+                className="bg-gradient-to-r from-localis-event to-rose-500 hover:from-localis-event hover:to-rose-400 text-white shadow-lg shadow-rose-900/30"
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-1.5" /> Novo evento
@@ -167,7 +167,7 @@ export default function EventsPage() {
             <SheetContent className="sm:max-w-xl flex flex-col">
               <SheetHeader className="text-left">
                 <SheetTitle className="flex items-center gap-2">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-onentree-event/70 to-rose-900/60">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-event/70 to-rose-900/60">
                     <PartyPopper className="h-4 w-4 text-rose-50" />
                   </span>
                   Novo evento
@@ -284,7 +284,7 @@ export default function EventsPage() {
                   className={cn(
                     'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-300',
                     upcomingOnly
-                      ? 'bg-gradient-to-r from-onentree-event to-rose-500 shadow-inner'
+                      ? 'bg-gradient-to-r from-localis-event to-rose-500 shadow-inner'
                       : 'bg-muted',
                   )}
                 >
@@ -295,7 +295,7 @@ export default function EventsPage() {
                     )}
                   />
                 </span>
-                <Clock className="h-4 w-4 text-onentree-event" />
+                <Clock className="h-4 w-4 text-localis-event" />
                 <span className="font-semibold">Apenas futuros</span>
               </button>
             </Label>
@@ -415,7 +415,7 @@ export default function EventsPage() {
         <SheetContent className="sm:max-w-xl flex flex-col">
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-onentree-event/70 to-rose-900/60">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-event/70 to-rose-900/60">
                 <Pencil className="h-4 w-4 text-rose-50" />
               </span>
               Editar evento
@@ -478,7 +478,7 @@ function EventTr({
     <TableRow className="group h-[64px]">
       <TableCell className="pl-6">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-onentree-event-muted/60 via-onentree-event/40 to-rose-900/40 ring-1 ring-white/10 grid place-items-center">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-localis-event-muted/60 via-localis-event/40 to-rose-900/40 ring-1 ring-white/10 grid place-items-center">
             <PartyPopper className="h-4 w-4 text-rose-200" />
           </div>
           <div className="min-w-0">
@@ -496,7 +496,7 @@ function EventTr({
       </TableCell>
       <TableCell className="text-muted-foreground">
         <div className="flex items-center gap-1.5 max-w-[24ch]">
-          <MapPin className="h-3.5 w-3.5 text-onentree-venue flex-shrink-0" />
+          <MapPin className="h-3.5 w-3.5 text-localis-venue flex-shrink-0" />
           <div className="min-w-0">
             <p className="font-medium truncate text-foreground">{event.venue?.name ?? '—'}</p>
             {event.venue?.city && (
@@ -510,7 +510,7 @@ function EventTr({
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-1.5 max-w-[22ch]">
-          <Clock className="h-3.5 w-3.5 text-onentree-event flex-shrink-0" />
+          <Clock className="h-3.5 w-3.5 text-localis-event flex-shrink-0" />
           <span className="font-mono text-xs">{formatDateTime(event.startDate)}</span>
         </div>
       </TableCell>
@@ -520,7 +520,7 @@ function EventTr({
       <TableCell>
         {typeof tickets === 'number' ? (
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold">
-            <Ticket className="h-3.5 w-3.5 text-onentree-event" />
+            <Ticket className="h-3.5 w-3.5 text-localis-event" />
             {tickets.toLocaleString('pt-BR')}
           </span>
         ) : (
@@ -543,7 +543,7 @@ function EventTr({
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2" onClick={onView}>
-              <Eye className="h-4 w-4 text-onentree-event" /> Ver detalhes
+              <Eye className="h-4 w-4 text-localis-event" /> Ver detalhes
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2" onClick={onEdit}>
               <Pencil className="h-4 w-4" /> Editar
@@ -589,7 +589,7 @@ function EmptyRow({
     <TableRow>
       <TableCell className="pl-6" colSpan={7}>
         <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 py-16 my-2 bg-muted/20">
-          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-onentree-event/30 to-rose-900/30 ring-1 ring-white/10 grid place-items-center">
+          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-localis-event/30 to-rose-900/30 ring-1 ring-white/10 grid place-items-center">
             <CalendarDays className="h-6 w-6 text-rose-300" />
           </div>
           <div className="text-center space-y-1.5 max-w-md">
@@ -600,7 +600,7 @@ function EmptyRow({
             <Button
               size="sm"
               onClick={cta.onClick}
-              className="mt-2 bg-gradient-to-r from-onentree-event to-rose-500 hover:from-onentree-event hover:to-rose-400 text-white shadow-lg shadow-rose-900/30"
+              className="mt-2 bg-gradient-to-r from-localis-event to-rose-500 hover:from-localis-event hover:to-rose-400 text-white shadow-lg shadow-rose-900/30"
             >
               {cta.label}
             </Button>

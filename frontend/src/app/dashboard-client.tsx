@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MapPinHouse, CalendarCheck, Ticket } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { EventCategoryKey } from '@/components/category-badge';
 import type { VenueRecent } from '@/lib/api/venues';
 import type { EventRecent } from '@/lib/api/events';
@@ -72,10 +73,10 @@ function StatCardsSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
       <Card className="rounded-3xl overflow-hidden border-white/5 h-[220px] animate-pulse">
-        <CardContent className="h-full bg-gradient-to-br from-onentree-venue-muted via-onentree-venue to-emerald-950/70" />
+        <CardContent className="h-full bg-gradient-to-br from-localis-venue-muted via-localis-venue to-emerald-950/70" />
       </Card>
       <Card className="rounded-3xl overflow-hidden border-white/5 h-[220px] animate-pulse">
-        <CardContent className="h-full bg-gradient-to-br from-onentree-event-muted via-onentree-event to-rose-950/70" />
+        <CardContent className="h-full bg-gradient-to-br from-localis-event-muted via-localis-event to-rose-950/70" />
       </Card>
     </div>
   );
@@ -110,12 +111,56 @@ function ListsSkeleton() {
   );
 }
 
+type EventsMode = 'recent' | 'upcoming';
+
+function EventsModeToggle({
+  value,
+  onChange,
+}: {
+  value: EventsMode;
+  onChange: (v: EventsMode) => void;
+}) {
+  const baseCls =
+    'h-8 px-3 rounded-full text-xs font-semibold transition-all duration-200';
+  const activeCls =
+    'bg-localis-event text-white shadow-[0_0_18px] shadow-rose-500/30 ring-1 ring-rose-400/30';
+  const idleCls =
+    'bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 ring-1 ring-white/5';
+  return (
+    <div
+      role="tablist"
+      aria-label="Modo de listagem de eventos"
+      className="inline-flex items-center gap-1 rounded-full bg-white/[0.03] p-1 ring-1 ring-white/5"
+    >
+      <button
+        role="tab"
+        aria-selected={value === 'recent'}
+        onClick={() => onChange('recent')}
+        className={cn(baseCls, value === 'recent' ? activeCls : idleCls)}
+      >
+        Recentes
+      </button>
+      <button
+        role="tab"
+        aria-selected={value === 'upcoming'}
+        onClick={() => onChange('upcoming')}
+        className={cn(baseCls, value === 'upcoming' ? activeCls : idleCls)}
+      >
+        Próximos
+      </button>
+    </div>
+  );
+}
+
 export function DashboardClient() {
   const {
     venues,
-    events,
+    eventsRecent,
+    eventsUpcoming,
     venuesTotal,
     eventsTotal,
+    ticketsTotal,
+    profile,
     isLoading,
     isFetching,
     isError,
@@ -123,24 +168,30 @@ export function DashboardClient() {
     refetchAll,
   } = useDashboardQueries({ limit: 3 });
 
-  const [showingRecentEvents, _setShowingRecentEvents] = React.useState<
-    'recent' | 'upcoming'
-  >('upcoming');
-
-  React.useEffect(() => {
-    if (showingRecentEvents === 'upcoming') {
-      // Mantém consistência visual sem requisições extras por enquanto
-    }
-  }, [showingRecentEvents]);
+  const [eventsMode, setEventsMode] = React.useState<EventsMode>('upcoming');
 
   const venueList = venues.map(toVenueListItem);
-  const eventList = events.map(toEventListItem);
   const venueRows = venueList.length
     ? venueList.map((v, i) => <VenueRow key={v.id} venue={v} index={i} />)
     : null;
+
+  const eventsSource = eventsMode === 'recent' ? eventsRecent : eventsUpcoming;
+  const eventList = eventsSource.map(toEventListItem);
   const eventRows = eventList.length
     ? eventList.map((e, i) => <EventRow key={e.id} event={e} index={i} />)
     : null;
+
+  const upcomingPreview = React.useMemo(
+    () => (eventsUpcoming.length ? eventsUpcoming[0] : eventsRecent[0]),
+    [eventsUpcoming, eventsRecent],
+  );
+  const upcomingVenuePreview = React.useMemo(
+    () => (venues.length ? venues[0] : undefined),
+    [venues],
+  );
+
+  const userName = profile?.name?.split(' ')[0] ?? 'Mariana';
+  const profileInitial = profile?.name?.trim().charAt(0);
 
   const heroStats = React.useMemo(
     () => [
@@ -168,37 +219,38 @@ export function DashboardClient() {
       },
       {
         label: 'Ingressos emitidos' as const,
-        value: isLoading ? '…' : '1.482',
+        value:
+          ticketsTotal > 0
+            ? ticketsTotal.toLocaleString('pt-BR')
+            : isLoading
+              ? '…'
+              : '0',
         tone: 'ticket' as const,
         icon: Ticket,
       },
     ],
-    [venuesTotal, eventsTotal, isLoading],
+    [venuesTotal, eventsTotal, ticketsTotal, isLoading],
   );
-
-  const firstVenuePreview = venues[0];
-  const firstEventPreview = events[0];
 
   return (
     <div className="relative">
-      {/* Hero */}
-      <section className="onentree-hero-bg">
+      <section className="localis-hero-bg">
         <ScrollArea className="hidden" type="hover" />
         <DashboardHero
-          userName="Mariana"
+          userName={userName}
+          userInitial={profileInitial}
           stats={heroStats}
-          upcomingVenueName={firstVenuePreview?.name}
-          upcomingEventName={firstEventPreview?.name}
+          upcomingVenueName={upcomingVenuePreview?.name}
+          upcomingEventName={upcomingPreview?.name}
           upcomingEventDate={
-            firstEventPreview?.startDate
-              ? formatDateTimeBR(firstEventPreview.startDate).replace('de ', '')
+            upcomingPreview?.startDate
+              ? formatDateTimeBR(upcomingPreview.startDate).replace('de ', '')
               : undefined
           }
           isLoading={isLoading}
         />
       </section>
 
-      {/* Stat Cards */}
       <section className="relative -mt-10 md:-mt-16 z-10">
         <div className="container pb-10">
           {isLoading && !venuesTotal && !eventsTotal ? (
@@ -223,7 +275,6 @@ export function DashboardClient() {
         </div>
       </section>
 
-      {/* Recent lists */}
       <section className="relative pb-16 pt-4">
         <div className="container">
           {isLoading && !venueList.length && !eventList.length ? (
@@ -240,11 +291,25 @@ export function DashboardClient() {
               />
               <RecentSection
                 tone="event"
-                title="Últimos Eventos adicionados"
-                description="Confira ingressos e datas"
+                title={
+                  eventsMode === 'recent'
+                    ? 'Últimos eventos adicionados'
+                    : 'Próximos eventos'
+                }
+                description={
+                  eventsMode === 'recent'
+                    ? 'Confira ingressos e datas'
+                    : 'Agenda de eventos futuros'
+                }
                 seeAllHref="/eventos"
                 items={eventRows ?? []}
                 emptyLabel="Nenhum evento cadastrado ainda. Clique em + Novo evento para começar."
+                headerExtra={
+                  <EventsModeToggle
+                    value={eventsMode}
+                    onChange={setEventsMode}
+                  />
+                }
               />
             </div>
           )}

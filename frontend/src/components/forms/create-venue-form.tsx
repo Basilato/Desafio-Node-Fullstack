@@ -167,8 +167,8 @@ export function CreateVenueForm({
   return (
     <form onSubmit={handleSubmit} className="flex h-full flex-col gap-4 pt-2">
       <ScrollArea className="flex-1 pr-4 -mr-4">
-        <div className="flex items-center gap-3 rounded-2xl border border-onentree-venue/30 bg-onentree-venue/10 px-4 py-3">
-          <div className="h-10 w-10 grid place-items-center rounded-xl bg-gradient-to-br from-onentree-venue/60 to-emerald-900/60 ring-1 ring-white/10">
+        <div className="flex items-center gap-3 rounded-2xl border border-localis-venue/30 bg-localis-venue/10 px-4 py-3">
+          <div className="h-10 w-10 grid place-items-center rounded-xl bg-gradient-to-br from-localis-venue/60 to-emerald-900/60 ring-1 ring-white/10">
             <MapPinHouse className="h-5 w-5 text-emerald-100" />
           </div>
           <div className="min-w-0">
@@ -358,7 +358,7 @@ export function CreateVenueForm({
         <Button
           type="submit"
           disabled={busy}
-          className="bg-gradient-to-r from-onentree-venue to-emerald-600 hover:from-onentree-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30 min-w-[160px]"
+          className="bg-gradient-to-r from-localis-venue to-emerald-600 hover:from-localis-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30 min-w-[160px]"
         >
           {busy ? 'Salvando…' : isUpdate ? 'Salvar alterações' : 'Cadastrar local'}
         </Button>

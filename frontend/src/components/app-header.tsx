@@ -87,12 +87,12 @@ export function AppHeader() {
                 className="gap-2 h-10 pl-1.5 pr-3 rounded-full
                   hover:bg-white/5 border border-white/10 data-[state=open]:bg-white/5"
               >
-                <Avatar className="h-7 w-7 ring-2 ring-onentree-event/60">
+                <Avatar className="h-7 w-7 ring-2 ring-localis-event/60">
                   <AvatarImage
                     src=""
                     alt="Foto de perfil do usuário"
                   />
-                  <AvatarFallback className="bg-gradient-to-br from-onentree-event to-onentree-venue text-white text-xs font-bold">
+                  <AvatarFallback className="bg-gradient-to-br from-localis-event to-localis-venue text-white text-xs font-bold">
                     TA
                   </AvatarFallback>
                 </Avatar>
@@ -113,7 +113,7 @@ export function AppHeader() {
               <DropdownMenuLabel className="pb-2">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-gradient-to-br from-onentree-event to-onentree-venue text-white text-sm font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-localis-event to-localis-venue text-white text-sm font-bold">
                       TA
                     </AvatarFallback>
                   </Avatar>
@@ -122,7 +122,7 @@ export function AppHeader() {
                       Mariana Silva
                     </span>
                     <span className="text-xs text-muted-foreground truncate">
-                      mariana@onentree.com.br
+                      mariana@localis.com.br
                     </span>
                   </div>
                 </div>

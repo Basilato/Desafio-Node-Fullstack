@@ -1,8 +1,8 @@
 {
-  "name": "onentree-desafio-fullstack",
+  "name": "localis-desafio-fullstack",
   "private": true,
   "version": "1.0.0",
-  "description": "OnEntree - Sistema de gerenciamento de ingressos e locais de eventos",
+  "description": "Localis - Sistema de gerenciamento de locais e eventos",
   "scripts": {
     "install:all": "npm install && npm --prefix frontend install && npm --prefix backend install",
     "dev:fe": "npm --prefix frontend run dev",
@@ -14,8 +14,8 @@
     "lint:fe": "npm --prefix frontend run lint",
     "lint:be": "npm --prefix backend run lint",
     "lint": "npm run lint:fe && npm run lint:be",
-    "typecheck:fe": "npm --prefix frontend exec tsc --noEmit",
-    "typecheck:be": "npm --prefix backend exec tsc --noEmit",
+    "typecheck:fe": "cd frontend && npx tsc --noEmit",
+    "typecheck:be": "cd backend && npx tsc --noEmit",
     "typecheck": "npm run typecheck:fe && npm run typecheck:be",
     "test:fe": "npm --prefix frontend run test",
     "test:be": "npm --prefix backend run test",

@@ -9,11 +9,11 @@ async function main() {
   const adminPassword = await bcrypt.hash('admin123', 10);
 
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@onentree.com.br' },
+    where: { email: 'admin@localis.com.br' },
     update: {},
     create: {
-      name: 'Administrador OnEntrée',
-      email: 'admin@onentree.com.br',
+      name: 'Administrador Localis',
+      email: 'admin@localis.com.br',
       passwordHash: adminPassword,
       role: UserRole.ADMIN,
     },
@@ -159,6 +159,59 @@ async function main() {
     },
   });
   console.log(`  ✅ Eventos: ${evento1.name}, ${evento2.name}, ${evento3.name}`);
+
+  // Ingressos — total 1.482 (alinhado ao card histórico do dashboard)
+  function gerarIngressos(
+    eventId: string,
+    ticketTypeId: string,
+    quantidade: number,
+    preco: number,
+    offset: number,
+  ) {
+    const arr: Array<{
+      eventId: string;
+      ticketTypeId: string;
+      holderName: string;
+      holderEmail: string;
+      holderDoc: string;
+      seat: string;
+      pricePaid: number;
+      status: string;
+    }> = [];
+    for (let i = 0; i < quantidade; i++) {
+      const n = offset + i + 1;
+      arr.push({
+        eventId,
+        ticketTypeId,
+        holderName: `Titular ${n}`,
+        holderEmail: `titular${n}@exemplo.com.br`,
+        holderDoc: `${String(10000000000 + n).padStart(11, '0')}`,
+        seat: `L${(i % 30) + 1}-A${(i % 20) + 1}`,
+        pricePaid: preco,
+        status: 'ACTIVE',
+      });
+    }
+    return arr;
+  }
+
+  const loteEvento1 = [
+    ...gerarIngressos(evento1.id, inteira.id, 382, 120.0, 0),
+    ...gerarIngressos(evento1.id, vip.id, 118, 500.0, 382),
+  ];
+  const loteEvento2 = [
+    ...gerarIngressos(evento2.id, inteira.id, 750, 120.0, 500),
+    ...gerarIngressos(evento2.id, vip.id, 100, 500.0, 1250),
+  ];
+  const loteEvento3 = [
+    ...gerarIngressos(evento3.id, inteira.id, 90, 120.0, 1350),
+    ...gerarIngressos(evento3.id, vip.id, 42, 500.0, 1440),
+  ];
+
+  const todosIngressos = [...loteEvento1, ...loteEvento2, ...loteEvento3];
+
+  await prisma.ticket.createMany({ data: todosIngressos, skipDuplicates: true });
+  console.log(`  ✅ Ingressos emitidos: ${todosIngressos.length}`);
+
   console.log('✅ Seeding concluído com sucesso!');
 }
 

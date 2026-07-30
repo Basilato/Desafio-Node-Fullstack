@@ -78,6 +78,31 @@ export default function EventDetailPage() {
   const [editing, setEditing] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
 
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#editar') setEditing(true);
+    if (hash === '#excluir') setDeleting(true);
+    const onHashChange = () => {
+      const h = window.location.hash;
+      setEditing((curr) => curr || h === '#editar');
+      setDeleting((curr) => curr || h === '#excluir');
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [eventId]);
+
+  React.useEffect(() => {
+    if (!editing && window.location.hash === '#editar') {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, [editing]);
+
+  React.useEffect(() => {
+    if (!deleting && window.location.hash === '#excluir') {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, [deleting]);
+
   const {
     data: event,
     isLoading: loadingEvent,
@@ -108,12 +133,12 @@ export default function EventDetailPage() {
           href="/eventos"
           className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
         >
-          <PartyPopper className="h-3.5 w-3.5 text-onentree-event" />
+          <PartyPopper className="h-3.5 w-3.5 text-localis-event" />
           Eventos
         </Link>
         <ChevronRight className="h-3 w-3 opacity-40" />
         <span className="text-foreground font-semibold inline-flex items-center gap-1.5 max-w-[40ch] truncate">
-          <CalendarDays className="h-3.5 w-3.5 text-onentree-event" />
+          <CalendarDays className="h-3.5 w-3.5 text-localis-event" />
           {loadingEvent ? 'Carregando…' : event?.name ?? 'Evento não encontrado'}
         </span>
       </nav>
@@ -129,12 +154,12 @@ export default function EventDetailPage() {
       {!loadingEvent && !errorEvent && event && (
         <>
           {/* Hero + CTA */}
-          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-onentree-event/20 via-onentree-event/5 to-transparent ring-1 ring-white/5">
-            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-onentree-event/10 blur-3xl pointer-events-none" />
+          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-localis-event/20 via-localis-event/5 to-transparent ring-1 ring-white/5">
+            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-localis-event/10 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-rose-500/10 blur-3xl pointer-events-none" />
             <div className="relative p-6 sm:p-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-start gap-4 min-w-0 flex-1">
-                <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-onentree-event via-onentree-event/80 to-rose-900/70 ring-1 ring-white/15 grid place-items-center shadow-xl shadow-rose-900/20">
+                <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-localis-event via-localis-event/80 to-rose-900/70 ring-1 ring-white/15 grid place-items-center shadow-xl shadow-rose-900/20">
                   <PartyPopper className="h-8 w-8 text-rose-50" strokeWidth={2.1} />
                 </div>
                 <div className="min-w-0 space-y-2.5">
@@ -146,7 +171,7 @@ export default function EventDetailPage() {
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5">
-                      <CalendarDays className="h-4 w-4 text-onentree-event" />
+                      <CalendarDays className="h-4 w-4 text-localis-event" />
                       <span className="font-mono text-foreground/90">
                         {formatBRShort(event.startDate)}
                       </span>
@@ -190,7 +215,7 @@ export default function EventDetailPage() {
             <Card className="rounded-3xl border-white/5 lg:col-span-2 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-event/10 text-onentree-event ring-1 ring-onentree-event/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
                     <Ticket className="h-3.5 w-3.5" />
                   </span>
                   Capacidade e ocupação
@@ -203,7 +228,7 @@ export default function EventDetailPage() {
                 <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="inline-flex items-center gap-2">
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-onentree-event/10 text-onentree-event ring-1 ring-onentree-event/20">
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
                         <Ticket className="h-4 w-4" />
                       </span>
                       <div>
@@ -225,7 +250,7 @@ export default function EventDetailPage() {
                           ? 'text-rose-400'
                           : progressPct >= 80
                             ? 'text-amber-400'
-                            : 'text-onentree-event')
+                            : 'text-localis-event')
                       }
                     >
                       <p className="text-xs font-semibold uppercase tracking-wider opacity-80">
@@ -244,7 +269,7 @@ export default function EventDetailPage() {
                         ? '[&>div]:bg-gradient-to-r [&>div]:from-rose-500 [&>div]:to-rose-400'
                         : progressPct >= 80
                           ? '[&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-amber-400'
-                          : '[&>div]:bg-gradient-to-r [&>div]:from-onentree-event [&>div]:to-rose-400')
+                          : '[&>div]:bg-gradient-to-r [&>div]:from-localis-event [&>div]:to-rose-400')
                     }
                   />
                   <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
@@ -266,7 +291,7 @@ export default function EventDetailPage() {
             <Card className="rounded-3xl border-white/5 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-event/10 text-onentree-event ring-1 ring-onentree-event/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
                     <UserCircle2 className="h-3.5 w-3.5" />
                   </span>
                   Criado por
@@ -276,7 +301,7 @@ export default function EventDetailPage() {
               <CardContent className="p-5">
                 {event.createdBy ? (
                   <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 flex items-start gap-3.5">
-                    <div className="h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br from-onentree-event/30 via-onentree-event/15 to-rose-900/15 ring-1 ring-white/5 grid place-items-center">
+                    <div className="h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br from-localis-event/30 via-localis-event/15 to-rose-900/15 ring-1 ring-white/5 grid place-items-center">
                       <UserCircle2 className="h-6 w-6 text-rose-300" strokeWidth={1.8} />
                     </div>
                     <div className="min-w-0 space-y-1.5">
@@ -287,10 +312,10 @@ export default function EventDetailPage() {
                         href={`mailto:${event.createdBy.email}`}
                         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground truncate max-w-[28ch]"
                       >
-                        <AtSign className="h-3.5 w-3.5 text-onentree-event shrink-0" />
+                        <AtSign className="h-3.5 w-3.5 text-localis-event shrink-0" />
                         <span className="font-mono truncate">{event.createdBy.email}</span>
                       </Link>
-                      <p className="text-[11px] font-mono uppercase tracking-wider text-onentree-event/80 bg-onentree-event/10 ring-1 ring-onentree-event/20 rounded-full px-2 py-0.5 inline-block mt-1">
+                      <p className="text-[11px] font-mono uppercase tracking-wider text-localis-event/80 bg-localis-event/10 ring-1 ring-localis-event/20 rounded-full px-2 py-0.5 inline-block mt-1">
                         {event.createdBy.role || 'Usuário'}
                       </p>
                     </div>
@@ -313,7 +338,7 @@ export default function EventDetailPage() {
               <CardHeader className="pb-4 pt-5 border-b border-border/50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-venue/10 text-onentree-venue ring-1 ring-onentree-venue/20">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
                       <Building2 className="h-3.5 w-3.5" />
                     </span>
                     Local do evento
@@ -324,7 +349,7 @@ export default function EventDetailPage() {
                   <Link href={`/locais/${event.venue.id}`} className="shrink-0">
                     <Button
                       size="sm"
-                      className="bg-gradient-to-r from-onentree-venue to-emerald-600 hover:from-onentree-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/20"
+                      className="bg-gradient-to-r from-localis-venue to-emerald-600 hover:from-localis-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/20"
                     >
                       Ver local <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
@@ -333,8 +358,8 @@ export default function EventDetailPage() {
               </CardHeader>
               <CardContent className="p-6">
                 {event.venue ? (
-                  <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-onentree-venue/10 via-transparent to-transparent p-5 flex items-start gap-4">
-                    <div className="h-14 w-14 shrink-0 rounded-2xl bg-gradient-to-br from-onentree-venue/70 via-onentree-venue/50 to-emerald-900/50 ring-1 ring-white/10 grid place-items-center">
+                  <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-localis-venue/10 via-transparent to-transparent p-5 flex items-start gap-4">
+                    <div className="h-14 w-14 shrink-0 rounded-2xl bg-gradient-to-br from-localis-venue/70 via-localis-venue/50 to-emerald-900/50 ring-1 ring-white/10 grid place-items-center">
                       <MapPin className="h-7 w-7 text-emerald-100" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-2.5">
@@ -343,7 +368,7 @@ export default function EventDetailPage() {
                           {event.venue.name}
                         </p>
                         <span className="inline-flex items-center gap-1.5 text-xs font-semibold">
-                          <Users className="h-3.5 w-3.5 text-onentree-venue" />
+                          <Users className="h-3.5 w-3.5 text-localis-venue" />
                           Capacidade:{' '}
                           <span className="font-mono text-foreground">
                             {event.venue.capacity.toLocaleString('pt-BR')}
@@ -353,7 +378,7 @@ export default function EventDetailPage() {
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         {event.venue.city && (
                           <span className="inline-flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-onentree-venue" />
+                            <MapPin className="h-3.5 w-3.5 text-localis-venue" />
                             {event.venue.city}
                             {event.venue.state ? ` · ${event.venue.state}` : ''}
                           </span>
@@ -375,7 +400,7 @@ export default function EventDetailPage() {
             <Card className="rounded-3xl border-white/5 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-event/10 text-onentree-event ring-1 ring-onentree-event/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
                     <Clock className="h-3.5 w-3.5" />
                   </span>
                   Datas e horários
@@ -384,12 +409,12 @@ export default function EventDetailPage() {
               </CardHeader>
               <CardContent className="p-5 space-y-3">
                 <TimeBlock
-                  icon={<CalendarDays className="h-4 w-4 text-onentree-event" />}
+                  icon={<CalendarDays className="h-4 w-4 text-localis-event" />}
                   label="Início"
                   value={formatBRDateTime(event.startDate)}
                 />
                 <TimeBlock
-                  icon={<Clock className="h-4 w-4 text-onentree-event" />}
+                  icon={<Clock className="h-4 w-4 text-localis-event" />}
                   label="Término"
                   value={formatBRDateTime(event.endDate)}
                 />
@@ -404,7 +429,7 @@ export default function EventDetailPage() {
         <SheetContent className="sm:max-w-xl flex flex-col">
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-onentree-event/70 to-rose-900/60">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-event/70 to-rose-900/60">
                 <Pencil className="h-4 w-4 text-rose-50" />
               </span>
               Editar evento
@@ -463,7 +488,7 @@ function TimeBlock({
 }) {
   return (
     <div className="rounded-2xl border border-border/60 bg-muted/20 p-3.5 flex items-start gap-3">
-      <div className="h-9 w-9 shrink-0 rounded-xl bg-onentree-event/10 text-onentree-event ring-1 ring-onentree-event/20 grid place-items-center">
+      <div className="h-9 w-9 shrink-0 rounded-xl bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20 grid place-items-center">
         {icon}
       </div>
       <div className="min-w-0 flex-1">

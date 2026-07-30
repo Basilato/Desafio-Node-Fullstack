@@ -1,14 +1,42 @@
 'use client';
 
 import { useQueries } from '@tanstack/react-query';
-import { getEventsRecent, getEventsStatsCount } from '@/lib/api/events';
-import { getVenuesRecent, getVenuesStatsCount } from '@/lib/api/venues';
+import {
+  getEventsRecent,
+  getEventsUpcoming,
+  getEventsStatsCount,
+  getEventsStatsTickets,
+  type EventRecent,
+} from '@/lib/api/events';
+import {
+  getVenuesRecent,
+  getVenuesStatsCount,
+  type VenueRecent,
+} from '@/lib/api/venues';
+import { getProfile, type LoggedUser } from '@/lib/api/auth';
 
 export interface UseDashboardQueriesOptions {
   limit?: number;
 }
 
-export function useDashboardQueries({ limit = 3 }: UseDashboardQueriesOptions = {}) {
+export interface DashboardQueriesResult {
+  venues: VenueRecent[];
+  eventsRecent: EventRecent[];
+  eventsUpcoming: EventRecent[];
+  venuesTotal: number;
+  eventsTotal: number;
+  ticketsTotal: number;
+  profile: LoggedUser | null;
+  isLoading: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  errors: Error[];
+  refetchAll: () => void;
+}
+
+export function useDashboardQueries({
+  limit = 3,
+}: UseDashboardQueriesOptions = {}): DashboardQueriesResult {
   return useQueries({
     queries: [
       {
@@ -24,6 +52,12 @@ export function useDashboardQueries({ limit = 3 }: UseDashboardQueriesOptions = 
         placeholderData: [],
       },
       {
+        queryKey: ['events', 'upcoming', limit] as const,
+        queryFn: () => getEventsUpcoming(limit),
+        staleTime: 60_000,
+        placeholderData: [],
+      },
+      {
         queryKey: ['venues', 'stats', 'count'] as const,
         queryFn: () => getVenuesStatsCount(),
         staleTime: 2 * 60_000,
@@ -35,14 +69,36 @@ export function useDashboardQueries({ limit = 3 }: UseDashboardQueriesOptions = 
         staleTime: 2 * 60_000,
         placeholderData: { total: 0 },
       },
+      {
+        queryKey: ['events', 'stats', 'tickets'] as const,
+        queryFn: () => getEventsStatsTickets(),
+        staleTime: 2 * 60_000,
+        placeholderData: { total: 0 },
+      },
+      {
+        queryKey: ['auth', 'profile'] as const,
+        queryFn: () => getProfile(),
+        staleTime: 5 * 60_000,
+      },
     ],
     combine: (results) => {
-      const [venuesQ, eventsQ, venuesCountQ, eventsCountQ] = results;
+      const [
+        venuesQ,
+        eventsRecentQ,
+        eventsUpcomingQ,
+        venuesCountQ,
+        eventsCountQ,
+        ticketsCountQ,
+        profileQ,
+      ] = results;
       return {
         venues: venuesQ.data ?? [],
-        events: eventsQ.data ?? [],
+        eventsRecent: eventsRecentQ.data ?? [],
+        eventsUpcoming: eventsUpcomingQ.data ?? [],
         venuesTotal: venuesCountQ.data?.total ?? 0,
         eventsTotal: eventsCountQ.data?.total ?? 0,
+        ticketsTotal: ticketsCountQ.data?.total ?? 0,
+        profile: (profileQ.data ?? null) as LoggedUser | null,
         isLoading: results.some((r) => r.isLoading),
         isFetching: results.some((r) => r.isFetching),
         isError: results.some((r) => r.isError),

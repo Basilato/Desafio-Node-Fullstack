@@ -167,6 +167,10 @@ export class EventsService {
     return this.prisma.event.count();
   }
 
+  async countTicketsTotal() {
+    return this.prisma.ticket.count();
+  }
+
   async create(dto: CreateEventDto, createdByIdFromToken?: string) {
     const startDate = new Date(dto.startDate);
     const endDate = new Date(dto.endDate);

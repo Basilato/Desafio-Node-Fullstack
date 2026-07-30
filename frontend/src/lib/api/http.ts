@@ -74,7 +74,7 @@ export async function apiFetch<T = unknown>(
   }
 
   if (!skipAuth && typeof window !== 'undefined') {
-    const token = localStorage.getItem('onentree_token');
+    const token = localStorage.getItem('localis_token');
     if (token) finalHeaders['Authorization'] = `Bearer ${token}`;
   }
 

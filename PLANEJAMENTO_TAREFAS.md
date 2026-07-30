@@ -1,4 +1,4 @@
-# Planejamento de Tarefas — Projeto OnEntrée
+# Planejamento de Tarefas — Projeto Localis
 
 > Sistema de gerenciamento de ingressos e locais de eventos com acesso via catracas de reconhecimento facial.
 
@@ -39,7 +39,7 @@ Baseados em [README.md](file:///c:/Users/Leo/Documents/trae_projects/Desafio-Nod
 
 Com base em [image.png](file:///c:/Users/Leo/Documents/trae_projects/Desafio-Node-Fullstack/image.png), a interface atual exibe:
 
-- **Header:** Logo "OnEntrée", navegação (Home, Eventos, Locais), menu do usuário (avatar + dropdown).
+- **Header:** Logo "Localis", navegação (Home, Eventos, Locais), menu do usuário (avatar + dropdown).
 - **Hero / Saudação:** Avatar personalizado, "Olá, [Nome]", subtítulo de apresentação.
 - **Cards de destaque (2 colunas):**
   - Locais (fundo verde escuro) — "Conferir locais"
@@ -135,7 +135,7 @@ Legenda:
 | **DS-01** | Bootstrap frontend: Next.js 14 (App Router) c/ TypeScript + Tailwind CSS v3 + PostCSS + Autoprefixer           | 🔴 Alta    | 3 HH       | AMB-02      |
 | **DS-02** | Inicializar **shadcn/ui** no projeto (npx shadcn@latest init): configurar `components.json`, alias `@/`, tema | 🔴 Alta    | 2 HH       | DS-01       |
 | **DS-03** | Instalar componentes shadcn base: `button`, `card`, `input`, `label`, `badge`, `avatar`, `dropdown-menu`, `table`, `dialog`, `sheet`, `toast` | 🔴 Alta | 2 HH | DS-02 |
-| **DS-04** | Definir tokens de tema em `tailwind.config.ts`: paleta OnEntrée (verde local, bordô evento, neutros, estados de erro/sucesso/aviso) + modo escuro/claro | 🔴 Alta | 4 HH | DS-01 |
+| **DS-04** | Definir tokens de tema em `tailwind.config.ts`: paleta Localis (verde local, bordô evento, neutros, estados de erro/sucesso/aviso) + modo escuro/claro | 🔴 Alta | 4 HH | DS-01 |
 | **DS-05** | Validar contraste WCAG AA para todas as combinações de tokens (texto/fundo/bordas) — ajustar se necessário    | 🟡 Média   | 2 HH       | DS-04       |
 | **DS-06** | Criar variantes de **Badge** por categoria (Futebol, Show, Teatro, Festival, etc.) c/ cores consistentes     | 🟡 Média   | 1 HH       | DS-03 + DS-04 |
 | **DS-07** | Tipografia: configurar fontes (ex: Inter), escala de tamanhos, pesos e line-heights consistentes             | 🟡 Média   | 2 HH       | DS-04       |
@@ -152,7 +152,7 @@ Legenda:
 
 | ID          | Descrição                                                                                                      | Prioridade | Estimativa | Dependência |
 | ----------- | -------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ----------- |
-| **FE-COMP-01** | **Header**: logo OnEntrée, navegação (Home, Eventos, Locais), tema toggle, menu do usuário c/ dropdown (logout)| 🔴 Alta | 4 HH | DS-03 + DS-10 |
+| **FE-COMP-01** | **Header**: logo Localis, navegação (Home, Eventos, Locais), tema toggle, menu do usuário c/ dropdown (logout)| 🔴 Alta | 4 HH | DS-03 + DS-10 |
 | **FE-COMP-02** | **Avatar c/ fallback**: iniciais + `aria-label` + estado de erro (imagem quebrada)                             | 🟡 Média   | 1,5 HH     | DS-03       |
 | **FE-COMP-03** | **HeroSaudacao**: saudação personalizada + subtítulo (corrigir cópia atual no protótipo)                       | 🟡 Média   | 1 HH       | DS-07 + FE-COMP-02 |
 | **FE-COMP-04** | **CardDestaque**: componente reutilizável para Locais (verde) e Eventos (bordô), com variante `variant="local"\|"evento"` e CTA | 🔴 Alta | 3 HH | DS-03 + DS-04 |

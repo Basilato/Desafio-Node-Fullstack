@@ -62,6 +62,31 @@ export default function VenueDetailPage() {
   const [editing, setEditing] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
 
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#editar') setEditing(true);
+    if (hash === '#excluir') setDeleting(true);
+    const onHashChange = () => {
+      const h = window.location.hash;
+      setEditing((curr) => curr || h === '#editar');
+      setDeleting((curr) => curr || h === '#excluir');
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [venueId]);
+
+  React.useEffect(() => {
+    if (!editing && window.location.hash === '#editar') {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, [editing]);
+
+  React.useEffect(() => {
+    if (!deleting && window.location.hash === '#excluir') {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, [deleting]);
+
   const {
     data: venue,
     isLoading: loadingVenue,
@@ -98,12 +123,12 @@ export default function VenueDetailPage() {
           href="/locais"
           className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
         >
-          <Building2 className="h-3.5 w-3.5 text-onentree-venue" />
+          <Building2 className="h-3.5 w-3.5 text-localis-venue" />
           Locais
         </Link>
         <ChevronRight className="h-3 w-3 opacity-40" />
         <span className="text-foreground font-semibold inline-flex items-center gap-1.5 max-w-[40ch] truncate">
-          <MapPin className="h-3.5 w-3.5 text-onentree-venue" />
+          <MapPin className="h-3.5 w-3.5 text-localis-venue" />
           {loadingVenue ? 'Carregando…' : venue?.name ?? 'Local não encontrado'}
         </span>
       </nav>
@@ -119,12 +144,12 @@ export default function VenueDetailPage() {
       {!loadingVenue && !errorVenue && venue && (
         <>
           {/* Hero + CTA */}
-          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-onentree-venue/20 via-onentree-venue/5 to-transparent ring-1 ring-white/5">
-            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-onentree-venue/10 blur-3xl pointer-events-none" />
+          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-localis-venue/20 via-localis-venue/5 to-transparent ring-1 ring-white/5">
+            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-localis-venue/10 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
             <div className="relative p-6 sm:p-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-start gap-4 min-w-0 flex-1">
-                <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-onentree-venue via-onentree-venue/80 to-emerald-900/70 ring-1 ring-white/15 grid place-items-center shadow-xl shadow-emerald-900/20">
+                <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-localis-venue via-localis-venue/80 to-emerald-900/70 ring-1 ring-white/15 grid place-items-center shadow-xl shadow-emerald-900/20">
                   <Building2 className="h-8 w-8 text-emerald-50" strokeWidth={2.1} />
                 </div>
                 <div className="min-w-0 space-y-2">
@@ -136,13 +161,13 @@ export default function VenueDetailPage() {
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
                     {venue.city && (
                       <span className="inline-flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4 text-onentree-venue" />
+                        <MapPin className="h-4 w-4 text-localis-venue" />
                         {venue.city}
                         {venue.state ? ` · ${venue.state}` : ''}
                       </span>
                     )}
                     <span className="inline-flex items-center gap-1.5">
-                      <Users className="h-4 w-4 text-onentree-venue" />
+                      <Users className="h-4 w-4 text-localis-venue" />
                       Capacidade de{' '}
                       <strong className="text-foreground">
                         {venue.capacity.toLocaleString('pt-BR')}
@@ -185,7 +210,7 @@ export default function VenueDetailPage() {
             <Card className="rounded-3xl border-white/5 lg:col-span-2 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-venue/10 text-onentree-venue ring-1 ring-onentree-venue/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
                     <MapPin className="h-3.5 w-3.5" />
                   </span>
                   Ficha do local
@@ -243,7 +268,7 @@ export default function VenueDetailPage() {
             <Card className="rounded-3xl border-white/5 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-venue/10 text-onentree-venue ring-1 ring-onentree-venue/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
                     <DoorOpen className="h-3.5 w-3.5" />
                   </span>
                   Portões ({venue.gates.length})
@@ -263,10 +288,10 @@ export default function VenueDetailPage() {
                   venue.gates.map((g) => (
                     <div
                       key={g.id}
-                      className="group rounded-2xl border border-border/60 bg-muted/20 p-4 hover:bg-muted/30 hover:border-onentree-venue/30 transition-colors"
+                      className="group rounded-2xl border border-border/60 bg-muted/20 p-4 hover:bg-muted/30 hover:border-localis-venue/30 transition-colors"
                     >
                       <div className="flex items-start gap-3">
-                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-onentree-venue/10 text-onentree-venue ring-1 ring-onentree-venue/30 font-mono font-bold text-xs shrink-0">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/30 font-mono font-bold text-xs shrink-0">
                           {g.identifier.toUpperCase()}
                         </span>
                         <div className="min-w-0 space-y-1">
@@ -290,7 +315,7 @@ export default function VenueDetailPage() {
             <CardHeader className="pb-4 pt-5 border-b border-border/50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-onentree-event/10 text-onentree-event ring-1 ring-onentree-event/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
                     <CalendarDays className="h-3.5 w-3.5" />
                   </span>
                   Eventos neste local
@@ -333,7 +358,7 @@ export default function VenueDetailPage() {
                         onClick={() => router.push(`/eventos/${e.id}`)}
                         className="w-full text-left p-5 sm:p-6 flex items-start gap-4 hover:bg-muted/20 transition-colors group"
                       >
-                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br from-onentree-event-muted/60 via-onentree-event/40 to-rose-900/40 ring-1 ring-white/10 grid place-items-center">
+                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br from-localis-event-muted/60 via-localis-event/40 to-rose-900/40 ring-1 ring-white/10 grid place-items-center">
                           <PartyPopper className="h-5 w-5 text-rose-200" />
                         </div>
                         <div className="min-w-0 flex-1 space-y-1">
@@ -343,7 +368,7 @@ export default function VenueDetailPage() {
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span className="inline-flex items-center gap-1.5">
-                              <Clock className="h-3.5 w-3.5 text-onentree-event" />
+                              <Clock className="h-3.5 w-3.5 text-localis-event" />
                               Início:{' '}
                               <span className="font-mono text-foreground/90">
                                 {formatBR(e.startDate)}
@@ -359,7 +384,7 @@ export default function VenueDetailPage() {
                         </div>
                         <Badge
                           variant="outline"
-                          className="hidden sm:inline-flex items-center gap-1 rounded-full border-border/70 text-muted-foreground group-hover:text-onentree-event group-hover:border-onentree-event/30 transition-colors"
+                          className="hidden sm:inline-flex items-center gap-1 rounded-full border-border/70 text-muted-foreground group-hover:text-localis-event group-hover:border-localis-event/30 transition-colors"
                         >
                           Ver detalhes <ArrowRight className="h-3.5 w-3.5" />
                         </Badge>
@@ -378,7 +403,7 @@ export default function VenueDetailPage() {
         <SheetContent className="sm:max-w-xl flex flex-col">
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-onentree-venue/70 to-emerald-900/60">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-venue/70 to-emerald-900/60">
                 <Pencil className="h-4 w-4 text-emerald-50" />
               </span>
               Editar local

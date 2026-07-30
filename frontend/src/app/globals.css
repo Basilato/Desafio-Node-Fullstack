@@ -73,20 +73,20 @@
     --sidebar-border: 240 6% 90%;
     --sidebar-ring: 240 5% 65%;
 
-    /* OnEntrée brand tokens (light) */
-    --onentree-venue: 144 33% 26%;
-    --onentree-venue-foreground: 0 0% 98%;
-    --onentree-venue-muted: 142 30% 36%;
+    /* Localis brand tokens (light) */
+    --localis-venue: 144 33% 26%;
+    --localis-venue-foreground: 0 0% 98%;
+    --localis-venue-muted: 142 30% 36%;
 
-    --onentree-event: 352 42% 28%;
-    --onentree-event-foreground: 0 0% 98%;
-    --onentree-event-muted: 352 36% 38%;
+    --localis-event: 352 42% 28%;
+    --localis-event-foreground: 0 0% 98%;
+    --localis-event-muted: 352 36% 38%;
 
-    --onentree-surface: 240 8% 12%;
-    --onentree-surface-foreground: 0 0% 98%;
+    --localis-surface: 240 8% 12%;
+    --localis-surface-foreground: 0 0% 98%;
 
-    --onentree-gradient-start: 352 32% 16%;
-    --onentree-gradient-end: 240 18% 8%;
+    --localis-gradient-start: 352 32% 16%;
+    --localis-gradient-end: 240 18% 8%;
 
     /* Category badges */
     --cat-futebol: 211 80% 45%;
@@ -147,20 +147,20 @@
     --sidebar-border: 240 5% 24%;
     --sidebar-ring: 240 5% 48%;
 
-    /* OnEntrée brand tokens (dark) */
-    --onentree-venue: 144 33% 20%;
-    --onentree-venue-foreground: 0 0% 98%;
-    --onentree-venue-muted: 144 30% 28%;
+    /* Localis brand tokens (dark) */
+    --localis-venue: 144 33% 20%;
+    --localis-venue-foreground: 0 0% 98%;
+    --localis-venue-muted: 144 30% 28%;
 
-    --onentree-event: 352 42% 22%;
-    --onentree-event-foreground: 0 0% 98%;
-    --onentree-event-muted: 352 36% 30%;
+    --localis-event: 352 42% 22%;
+    --localis-event-foreground: 0 0% 98%;
+    --localis-event-muted: 352 36% 30%;
 
-    --onentree-surface: 240 8% 14%;
-    --onentree-surface-foreground: 0 0% 98%;
+    --localis-surface: 240 8% 14%;
+    --localis-surface-foreground: 0 0% 98%;
 
-    --onentree-gradient-start: 352 30% 14%;
-    --onentree-gradient-end: 240 16% 6%;
+    --localis-gradient-start: 352 30% 14%;
+    --localis-gradient-end: 240 16% 6%;
 
     /* Category badges (dark) */
     --cat-futebol: 211 75% 55%;
@@ -189,9 +189,9 @@
   }
 }
 
-/* ===== OnEntrée — Hero & Section decor (modern + premium) ===== */
+/* ===== Localis — Hero & Section decor (modern + premium) ===== */
 @layer utilities {
-  .onentree-hero-bg {
+  .localis-hero-bg {
     position: relative;
     overflow: hidden;
     background:
@@ -200,7 +200,7 @@
       radial-gradient(600px 600px at 50% 120%, hsl(260 40% 20% / 0.35), transparent 70%),
       linear-gradient(180deg, hsl(240 12% 8%) 0%, hsl(240 10% 7%) 100%);
   }
-  .onentree-hero-bg::before {
+  .localis-hero-bg::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -210,10 +210,10 @@
     mask-image: radial-gradient(ellipse at top, black 40%, transparent 80%);
     pointer-events: none;
   }
-  .onentree-card-glow {
+  .localis-card-glow {
     position: relative;
   }
-  .onentree-card-glow::after {
+  .localis-card-glow::after {
     content: "";
     position: absolute;
     inset: -1px;
@@ -229,10 +229,10 @@
     opacity: 0.9;
     transition: opacity 0.25s ease;
   }
-  .onentree-card-glow:hover::after {
+  .localis-card-glow:hover::after {
     opacity: 1;
   }
-  .onentree-gradient-text {
+  .localis-gradient-text {
     background: linear-gradient(135deg, hsl(352 65% 72%) 0%, hsl(0 0% 98%) 40%, hsl(144 45% 70%) 100%);
     -webkit-background-clip: text;
     background-clip: text;

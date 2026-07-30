@@ -71,4 +71,43 @@ export class AuthService {
       },
     });
   }
+
+  /**
+   * Perfil usado pelo Dashboard.
+   * Se houver JWT válido retorna o usuário autenticado;
+   * senão retorna o primeiro usuário ADMIN cadastrado (fallback p/ demo enquanto
+   * não temos tela de login pronta no front).
+   */
+  async profile(payload?: JwtUserPayload) {
+    if (payload?.sub) {
+      const authenticated = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          avatarUrl: true,
+          createdAt: true,
+        },
+      });
+      if (authenticated) return authenticated;
+    }
+    const fallback = await this.prisma.user.findFirst({
+      where: { role: 'ADMIN' },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        createdAt: true,
+      },
+    });
+    if (!fallback) {
+      throw new UnauthorizedException('Nenhum usuário encontrado. Rode o seed.');
+    }
+    return fallback;
+  }
 }

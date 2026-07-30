@@ -2,7 +2,7 @@
   "name": "backend",
   "private": true,
   "version": "1.0.0",
-  "description": "OnEntree Backend - NestJS + Prisma",
+  "description": "Localis Backend - NestJS + Prisma",
   "license": "MIT",
   "scripts": {
     "build": "nest build",

@@ -63,7 +63,7 @@ export function VenueRow({
       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 pr-1">
         <div
           className="hidden sm:grid place-items-center h-11 w-11 shrink-0 rounded-xl
-            bg-onentree-venue/15 ring-1 ring-onentree-venue/30 text-onentree-venue-foreground"
+            bg-localis-venue/15 ring-1 ring-localis-venue/30 text-localis-venue-foreground"
           aria-hidden="true"
         >
           <MapPin className="h-5 w-5 text-emerald-300" />
@@ -112,7 +112,7 @@ export function VenueRow({
             <span
               className={cn(
                 'inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-semibold',
-                'bg-onentree-venue/15 text-onentree-venue-foreground/90 ring-1 ring-inset ring-onentree-venue/30',
+                'bg-localis-venue/15 text-localis-venue-foreground/90 ring-1 ring-inset ring-localis-venue/30',
               )}
               title={venue.email ? `Contato: ${venue.email}` : 'Portões liberados'}
             >
@@ -163,7 +163,7 @@ export function EventRow({
       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 pr-1">
         <div
           className="hidden sm:grid place-items-center h-11 w-11 shrink-0 rounded-xl
-            bg-onentree-event/15 ring-1 ring-onentree-event/30"
+            bg-localis-event/15 ring-1 ring-localis-event/30"
           aria-hidden="true"
         >
           <Calendar className="h-5 w-5 text-rose-300" />
@@ -269,14 +269,16 @@ function RowActions({
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer focus:bg-white/5">
-            <Link href={`${href}/editar`}>
+            <Link href={`${href}#editar`} scroll={true}>
               <Pencil className="mr-2 h-4 w-4" /> Editar
               <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer focus:bg-white/5">
-            <Copy className="mr-2 h-4 w-4" /> Duplicar
-            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+          <DropdownMenuItem asChild className="cursor-pointer focus:bg-white/5">
+            <Link href={href}>
+              <Copy className="mr-2 h-4 w-4" /> Duplicar
+              <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer focus:bg-white/5">
             <a href={href} target="_blank" rel="noopener noreferrer">
@@ -285,10 +287,12 @@ function RowActions({
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="bg-white/5" />
-        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer">
-          <Trash2 className="mr-2 h-4 w-4" />
-          Excluir
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+        <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:bg-destructive/10">
+          <Link href={`${href}#excluir`} scroll={true}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            Excluir
+            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

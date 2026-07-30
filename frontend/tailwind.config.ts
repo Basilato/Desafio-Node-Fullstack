@@ -79,25 +79,25 @@ const config: Config = {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        // OnEntrée custom semantic tokens (marca)
-        onentree: {
+        // Localis custom semantic tokens (marca)
+        localis: {
           venue: {
-            DEFAULT: 'hsl(var(--onentree-venue))',
-            foreground: 'hsl(var(--onentree-venue-foreground))',
-            muted: 'hsl(var(--onentree-venue-muted))',
+            DEFAULT: 'hsl(var(--localis-venue))',
+            foreground: 'hsl(var(--localis-venue-foreground))',
+            muted: 'hsl(var(--localis-venue-muted))',
           },
           event: {
-            DEFAULT: 'hsl(var(--onentree-event))',
-            foreground: 'hsl(var(--onentree-event-foreground))',
-            muted: 'hsl(var(--onentree-event-muted))',
+            DEFAULT: 'hsl(var(--localis-event))',
+            foreground: 'hsl(var(--localis-event-foreground))',
+            muted: 'hsl(var(--localis-event-muted))',
           },
           surface: {
-            DEFAULT: 'hsl(var(--onentree-surface))',
-            foreground: 'hsl(var(--onentree-surface-foreground))',
+            DEFAULT: 'hsl(var(--localis-surface))',
+            foreground: 'hsl(var(--localis-surface-foreground))',
           },
           gradient: {
-            start: 'hsl(var(--onentree-gradient-start))',
-            end: 'hsl(var(--onentree-gradient-end))',
+            start: 'hsl(var(--localis-gradient-start))',
+            end: 'hsl(var(--localis-gradient-end))',
           },
         },
         category: {

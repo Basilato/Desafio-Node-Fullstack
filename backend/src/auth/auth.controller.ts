@@ -10,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuardOptional } from './guards/jwt-auth-optional.guard';
 import { CurrentUser, type JwtUserPayload } from './decorators/current-user.decorator';
 
 @ApiTags('Auth')
@@ -20,7 +21,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Login (demo: admin@onentree.com.br / admin123 — seed executado)',
+    summary: 'Login (demo: admin@localis.com.br / admin123 — seed executado)',
   })
   @ApiBody({ type: LoginDto })
   @ApiCreatedResponse({ description: 'Token e payload do usuário' })
@@ -35,5 +36,16 @@ export class AuthController {
   @ApiOperation({ summary: 'Dados do usuário autenticado' })
   me(@CurrentUser() user: JwtUserPayload) {
     return this.auth.me(user);
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuardOptional)
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Perfil p/ Dashboard (autenticado ou fallback Admin)' })
+  @ApiOperation({
+    summary: 'Perfil público para o Dashboard (com JWT usa a sessão, senão usa Admin do seed)',
+  })
+  profile(@CurrentUser() user?: JwtUserPayload) {
+    return this.auth.profile(user);
   }
 }

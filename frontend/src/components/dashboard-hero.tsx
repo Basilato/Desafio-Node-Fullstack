@@ -19,6 +19,7 @@ type StatsArray = Array<{
 
 interface DashboardHeroProps {
   userName?: string;
+  userInitial?: string;
   tagline?: string;
   stats?: StatsArray;
   upcomingVenueName?: string;
@@ -29,6 +30,7 @@ interface DashboardHeroProps {
 
 export function DashboardHero({
   userName = 'Mariana',
+  userInitial,
   tagline = 'Confira todos os seus eventos e locais em um só lugar!',
   stats,
   upcomingVenueName = 'Carregando…',
@@ -36,6 +38,7 @@ export function DashboardHero({
   upcomingEventDate = 'em breve',
   isLoading = false,
 }: DashboardHeroProps) {
+  const initial = (userInitial ?? userName?.trim().charAt(0) ?? 'U').toUpperCase();
   const defaultStats: StatsArray = [
     { label: 'Locais ativos', value: '12', icon: MapPinHouse, tone: 'venue' },
     { label: 'Eventos futuros', value: '28', icon: CalendarCheck, tone: 'event' },
@@ -45,9 +48,9 @@ export function DashboardHero({
 
   const toneClass: Record<StatsArray[number]['tone'], string> = {
     venue:
-      'from-onentree-venue-muted/60 to-onentree-venue/30 ring-onentree-venue/30 text-emerald-100',
+      'from-localis-venue-muted/60 to-localis-venue/30 ring-localis-venue/30 text-emerald-100',
     event:
-      'from-onentree-event-muted/60 to-onentree-event/30 ring-onentree-event/30 text-rose-100',
+      'from-localis-event-muted/60 to-localis-event/30 ring-localis-event/30 text-rose-100',
     ticket:
       'from-sky-600/40 to-indigo-700/30 ring-sky-400/30 text-sky-100',
   };
@@ -64,26 +67,26 @@ export function DashboardHero({
                 text-muted-foreground backdrop-blur-sm"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              Dashboard OnEntrée · Visão geral da semana
+              Dashboard Localis · Visão geral da semana
             </span>
 
             <div className="flex items-start gap-5">
               <div className="relative shrink-0">
                 <div
                   className="absolute -inset-2 rounded-[1.75rem] blur-2xl opacity-60
-                    bg-gradient-to-br from-onentree-event/60 via-purple-600/30 to-onentree-venue/60"
+                    bg-gradient-to-br from-localis-event/60 via-purple-600/30 to-localis-venue/60"
                   aria-hidden="true"
                 />
                 <div
                   className="relative h-24 w-24 rounded-[1.75rem] p-[2px]
-                    bg-gradient-to-br from-onentree-event via-fuchsia-500 to-onentree-venue
+                    bg-gradient-to-br from-localis-event via-fuchsia-500 to-localis-venue
                     shadow-2xl"
                 >
                   <div className="h-full w-full rounded-[calc(1.75rem-2px)] bg-background flex items-center justify-center">
                     <Avatar className="h-20 w-20 rounded-[1.35rem]">
                       <AvatarFallback
                         className="h-full w-full rounded-[1.35rem]
-                          bg-gradient-to-br from-onentree-event-muted to-onentree-venue-muted
+                          bg-gradient-to-br from-localis-event-muted to-localis-venue-muted
                           text-foreground text-3xl font-extrabold"
                       >
                         <span className="relative">
@@ -91,7 +94,7 @@ export function DashboardHero({
                             className="absolute -top-6 -right-5 h-6 w-6 text-emerald-300 drop-shadow"
                             strokeWidth={2.5}
                           />
-                          M
+                          {initial}
                         </span>
                       </AvatarFallback>
                     </Avatar>
@@ -113,7 +116,7 @@ export function DashboardHero({
                 </p>
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.05]">
                   Olá,{' '}
-                  <span className="onentree-gradient-text">{userName}</span>
+                  <span className="localis-gradient-text">{userName}</span>
                   <span className="inline-block ml-2">👋</span>
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
@@ -158,7 +161,7 @@ export function DashboardHero({
             aria-hidden="true"
             className="relative hidden lg:block animate-fade-in"
           >
-            <div className="absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-onentree-event/30 via-purple-600/10 to-onentree-venue/30 blur-3xl" />
+            <div className="absolute inset-0 -z-10 rounded-[2.5rem] bg-gradient-to-br from-localis-event/30 via-purple-600/10 to-localis-venue/30 blur-3xl" />
             <div
               className="relative aspect-[4/3] rounded-[2rem] p-[1px]
                 bg-gradient-to-br from-white/20 via-white/5 to-transparent
@@ -166,7 +169,7 @@ export function DashboardHero({
             >
               <div
                 className="h-full w-full rounded-[calc(2rem-1px)] overflow-hidden
-                  bg-gradient-to-br from-background via-onentree-surface/50 to-background
+                  bg-gradient-to-br from-background via-localis-surface/50 to-background
                   border border-white/5"
               >
                 <div className="flex flex-col h-full p-6 gap-4">
@@ -177,11 +180,11 @@ export function DashboardHero({
                       <span className="h-3 w-3 rounded-full bg-emerald-500/70" />
                     </div>
                     <span className="text-xs text-muted-foreground font-mono">
-                      onentree.app/dashboard
+                      localis.app/dashboard
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 flex-1">
-                    <div className="rounded-2xl bg-gradient-to-br from-onentree-venue-muted/50 to-onentree-venue/30 p-4 flex flex-col justify-between ring-1 ring-white/5">
+                    <div className="rounded-2xl bg-gradient-to-br from-localis-venue-muted/50 to-localis-venue/30 p-4 flex flex-col justify-between ring-1 ring-white/5">
                       <MapPinHouse className="h-6 w-6 text-emerald-200" />
                       <div>
                         <p className="text-xs text-emerald-100/70">Próximo local</p>
@@ -195,7 +198,7 @@ export function DashboardHero({
                         </p>
                       </div>
                     </div>
-                    <div className="rounded-2xl bg-gradient-to-br from-onentree-event-muted/50 to-onentree-event/30 p-4 flex flex-col justify-between ring-1 ring-white/5">
+                    <div className="rounded-2xl bg-gradient-to-br from-localis-event-muted/50 to-localis-event/30 p-4 flex flex-col justify-between ring-1 ring-white/5">
                       <CalendarCheck className="h-6 w-6 text-rose-200" />
                       <div>
                         <p
@@ -225,7 +228,7 @@ export function DashboardHero({
                         <div className="mt-1.5 h-2 rounded-full bg-white/5 overflow-hidden">
                           <div
                             className={cn(
-                              'h-full rounded-full bg-gradient-to-r from-onentree-event via-fuchsia-500 to-onentree-venue transition-all duration-700',
+                              'h-full rounded-full bg-gradient-to-r from-localis-event via-fuchsia-500 to-localis-venue transition-all duration-700',
                               isLoading && 'opacity-75',
                             )}
                             style={{

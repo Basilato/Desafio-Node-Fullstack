@@ -98,7 +98,7 @@ export default function VenuesPage() {
           </Link>
           <span className="opacity-40">/</span>
           <span className="text-foreground font-semibold inline-flex items-center gap-1.5">
-            <Building2 className="h-3.5 w-3.5 text-onentree-venue" />
+            <Building2 className="h-3.5 w-3.5 text-localis-venue" />
             Locais
           </span>
         </nav>
@@ -106,20 +106,20 @@ export default function VenuesPage() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-2.5">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-onentree-venue/60 to-emerald-900/60 ring-1 ring-white/10">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-localis-venue/60 to-emerald-900/60 ring-1 ring-white/10">
                 <Building2 className="h-4.5 w-4.5 text-emerald-100" />
               </span>
               Catálogo de locais
             </h1>
             <p className="text-muted-foreground">
-              Administre arenas, teatros, estádios e todos os locais onde os eventos da OnEntrée
+              Administre arenas, teatros, estádios e todos os locais onde os eventos da Localis
               acontecem.
             </p>
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <Button
-                className="bg-gradient-to-r from-onentree-venue to-emerald-600 hover:from-onentree-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30"
+                className="bg-gradient-to-r from-localis-venue to-emerald-600 hover:from-localis-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30"
                 size="sm"
               >
                 <Plus className="h-4 w-4 mr-1.5" /> Novo local
@@ -128,7 +128,7 @@ export default function VenuesPage() {
             <SheetContent className="sm:max-w-xl flex flex-col">
               <SheetHeader className="text-left">
                 <SheetTitle className="flex items-center gap-2">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-onentree-venue/70 to-emerald-900/60">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-venue/70 to-emerald-900/60">
                     <Building2 className="h-4 w-4 text-emerald-50" />
                   </span>
                   Novo local
@@ -272,7 +272,7 @@ export default function VenuesPage() {
         <SheetContent className="sm:max-w-xl flex flex-col">
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-onentree-venue/70 to-emerald-900/60">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-venue/70 to-emerald-900/60">
                 <Pencil className="h-4 w-4 text-emerald-50" />
               </span>
               Editar local
@@ -338,7 +338,7 @@ function VenueTr({
     <TableRow className="group h-[64px]">
       <TableCell className="pl-6">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-onentree-venue-muted/60 via-onentree-venue/40 to-emerald-900/40 ring-1 ring-white/10 grid place-items-center">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-localis-venue-muted/60 via-localis-venue/40 to-emerald-900/40 ring-1 ring-white/10 grid place-items-center">
             <MapPin className="h-4 w-4 text-emerald-200" />
           </div>
           <div className="min-w-0">
@@ -363,7 +363,7 @@ function VenueTr({
       </TableCell>
       <TableCell>
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold">
-          <Users className="h-3.5 w-3.5 text-onentree-venue" />
+          <Users className="h-3.5 w-3.5 text-localis-venue" />
           {venue.capacity.toLocaleString('pt-BR')}
         </span>
       </TableCell>
@@ -373,7 +373,7 @@ function VenueTr({
             {ids.map((id) => (
               <span
                 key={id}
-                className="inline-flex h-6 min-w-[26px] items-center justify-center rounded-lg bg-onentree-venue/10 text-onentree-venue ring-1 ring-onentree-venue/30 px-2 font-mono text-[11px] font-bold"
+                className="inline-flex h-6 min-w-[26px] items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/30 px-2 font-mono text-[11px] font-bold"
               >
                 {id}
               </span>
@@ -404,7 +404,7 @@ function VenueTr({
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2" onClick={onView}>
-              <Eye className="h-4 w-4 text-onentree-venue" /> Ver detalhes
+              <Eye className="h-4 w-4 text-localis-venue" /> Ver detalhes
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2" onClick={onEdit}>
               <Pencil className="h-4 w-4" /> Editar
@@ -449,7 +449,7 @@ function EmptyRow({
     <TableRow onClick={onClick} className={cn(cta?.label && 'cursor-pointer')}>
       <TableCell className="pl-6" colSpan={6}>
         <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 py-16 my-2 bg-muted/20">
-          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-onentree-venue/30 to-emerald-900/30 ring-1 ring-white/10 grid place-items-center">
+          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-localis-venue/30 to-emerald-900/30 ring-1 ring-white/10 grid place-items-center">
             <Building2 className="h-6 w-6 text-emerald-300" />
           </div>
           <div className="text-center space-y-1.5 max-w-md">
@@ -463,7 +463,7 @@ function EmptyRow({
                 e.stopPropagation();
                 cta.onClick();
               }}
-              className="mt-2 bg-gradient-to-r from-onentree-venue to-emerald-600 hover:from-onentree-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30"
+              className="mt-2 bg-gradient-to-r from-localis-venue to-emerald-600 hover:from-localis-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30"
             >
               {cta.label}
             </Button>
