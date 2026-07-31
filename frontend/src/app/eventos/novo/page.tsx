@@ -64,8 +64,8 @@ export default function NovoEventoPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 grid place-items-center rounded-2xl bg-gradient-to-br from-localis-event/70 to-rose-900/70 ring-1 ring-white/10 shadow-lg shadow-rose-900/30">
-            <CalendarPlus2 className="h-6 w-6 text-rose-100" />
+          <div className="h-12 w-12 grid place-items-center rounded-2xl bg-gradient-to-br from-primary/50 to-primary-foreground/15 ring-1 ring-border/40 shadow-soft">
+            <CalendarPlus2 className="h-6 w-6 text-primary-foreground/90" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Criar novo evento</h1>
@@ -81,7 +81,7 @@ export default function NovoEventoPage() {
         <CardHeader className="border-b border-border/50 pb-5">
           <CardTitle className="text-xl">Dados do evento</CardTitle>
           <CardDescription>
-            Os campos marcados com <span className="text-rose-400">*</span> são obrigatórios.
+            Os campos marcados com <span className="text-primary">*</span> são obrigatórios.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 h-[72vh] max-h-[72vh]">

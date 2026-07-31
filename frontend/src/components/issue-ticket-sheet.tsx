@@ -220,8 +220,8 @@ export function IssueTicketSheet({
       <SheetContent className="sm:max-w-xl flex flex-col">
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-event/80 to-rose-900/80 ring-1 ring-white/10">
-              <Ticket className="h-4 w-4 text-rose-50" />
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary/40 to-primary-foreground/15 ring-1 ring-white/10">
+              <Ticket className="h-4 w-4 text-primary-foreground" />
             </span>
             Emitir ingresso
           </SheetTitle>
@@ -242,21 +242,21 @@ export function IssueTicketSheet({
               className={cn(
                 'rounded-2xl border p-4 flex items-start gap-3',
                 isSoldOut
-                  ? 'border-rose-500/30 bg-rose-500/10'
+                  ? 'border-primary/20 bg-primary/10'
                   : (remaining ?? 0) <= Math.max(
                       5,
                       Math.ceil((capacityQ.data?.venueCapacity ?? 1) * 0.1),
                     )
                     ? 'border-amber-500/30 bg-amber-500/10'
-                    : 'border-emerald-500/20 bg-emerald-500/5',
+                    : 'border-accent/20 bg-accent/5',
               )}
             >
               {isSoldOut ? (
-                <div className="h-9 w-9 shrink-0 rounded-lg bg-rose-500/15 grid place-items-center">
+                <div className="h-9 w-9 shrink-0 rounded-lg bg-primary/15 grid place-items-center">
                   <Ban className="h-4.5 w-4.5 text-rose-400" />
                 </div>
               ) : (
-                <div className="h-9 w-9 shrink-0 rounded-lg bg-emerald-500/15 grid place-items-center">
+                <div className="h-9 w-9 shrink-0 rounded-lg bg-accent/15 grid place-items-center">
                   <Sparkles className="h-4.5 w-4.5 text-emerald-400" />
                 </div>
               )}
@@ -279,7 +279,7 @@ export function IssueTicketSheet({
               {isSoldOut && (
                 <Badge
                   variant="outline"
-                  className="shrink-0 bg-rose-500/20 border-rose-500/40 text-rose-200 uppercase text-[10px]"
+                  className="shrink-0 bg-primary/20 border-primary/30 text-primary-foreground uppercase text-[10px]"
                 >
                   Esgotado
                 </Badge>
@@ -339,9 +339,9 @@ export function IssueTicketSheet({
                         className={cn(
                           'group relative text-left rounded-xl border p-3 flex flex-col gap-1.5 transition-all',
                           active
-                            ? 'border-localis-event ring-2 ring-localis-event/30 bg-localis-event/5 shadow-lg shadow-rose-900/10'
+                            ? 'border-primary ring-2 ring-primary/30 bg-primary/5 shadow-lg shadow-soft'
                             : hasErr
-                              ? 'border-rose-500/50 hover:border-rose-500/70 bg-rose-500/5'
+                              ? 'border-rose-500/50 hover:border-rose-500/70 bg-primary/5'
                               : 'border-border/70 hover:border-white/15 hover:bg-muted/40',
                         )}
                       >
@@ -353,7 +353,7 @@ export function IssueTicketSheet({
                             t.category as keyof typeof TICKET_CATEGORY_LABELS
                           ] ?? t.category}
                         </p>
-                        <p className="text-lg font-black tracking-tight mt-0.5 text-localis-event">
+                        <p className="text-lg font-black tracking-tight mt-0.5 text-primary">
                           {currencyBRL(Number(t.price || 0))}
                         </p>
                         {(t._count?.tickets ?? 0) > 0 && (
@@ -365,7 +365,7 @@ export function IssueTicketSheet({
                           </Badge>
                         )}
                         {active && (
-                          <CheckCircle2 className="absolute bottom-3 right-3 h-4.5 w-4.5 text-localis-event" />
+                          <CheckCircle2 className="absolute bottom-3 right-3 h-4.5 w-4.5 text-primary" />
                         )}
                       </button>
                     );
@@ -489,7 +489,7 @@ export function IssueTicketSheet({
                         shouldValidate: true,
                       });
                     }}
-                    className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-localis-event font-semibold"
+                    className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-primary font-semibold"
                   >
                     Limpar
                   </button>
@@ -570,7 +570,7 @@ export function IssueTicketSheet({
                                   isActive
                                     ? vip
                                       ? 'border-amber-400/60 ring-2 ring-amber-400/30 bg-amber-400/5 shadow-lg shadow-amber-900/20'
-                                      : 'border-localis-event ring-2 ring-localis-event/30 bg-localis-event/5 shadow-lg shadow-rose-900/10'
+                                      : 'border-primary ring-2 ring-primary/30 bg-primary/5 shadow-lg shadow-soft'
                                     : vip
                                       ? 'border-amber-400/30 hover:border-amber-400/50 bg-amber-400/[0.03] hover:bg-amber-400/[0.06]'
                                       : 'border-border/60 hover:border-white/15 hover:bg-muted/30',
@@ -587,7 +587,7 @@ export function IssueTicketSheet({
                                     isActive
                                       ? vip
                                         ? 'bg-amber-400/20'
-                                        : 'bg-localis-event/20'
+                                        : 'bg-primary/20'
                                       : 'bg-muted/40',
                                   )}
                                 >
@@ -597,7 +597,7 @@ export function IssueTicketSheet({
                                       isActive
                                         ? vip
                                           ? 'text-amber-300'
-                                          : 'text-localis-event'
+                                          : 'text-primary'
                                         : 'text-muted-foreground',
                                     )}
                                   />
@@ -644,7 +644,7 @@ export function IssueTicketSheet({
                                   <CheckCircle2
                                     className={cn(
                                       'absolute bottom-3 right-3 h-4 w-4',
-                                      vip ? 'text-amber-300' : 'text-localis-event',
+                                      vip ? 'text-amber-300' : 'text-primary',
                                     )}
                                   />
                                 )}
@@ -664,8 +664,8 @@ export function IssueTicketSheet({
               className={cn(
                 'rounded-2xl border p-4 space-y-3',
                 selectedGate && isGateVip(selectedGate)
-                  ? 'border-amber-400/40 bg-gradient-to-br from-amber-400/10 via-localis-event/5 to-transparent shadow-md shadow-amber-900/10'
-                  : 'border-border/60 bg-gradient-to-br from-localis-event/10 via-transparent to-transparent',
+                  ? 'border-warning/40 bg-gradient-to-br from-warning/10 via-primary/5 to-transparent shadow-md shadow-amber-900/10'
+                  : 'border-border/60 bg-gradient-to-br from-primary/10 via-transparent to-transparent',
               )}
             >
               <div className="flex items-center justify-between gap-2">
@@ -716,7 +716,7 @@ export function IssueTicketSheet({
                       'text-xl font-black tracking-tight',
                       selectedGate && isGateVip(selectedGate)
                         ? 'text-amber-300'
-                        : 'text-localis-event',
+                        : 'text-primary',
                     )}
                   >
                     {currencyBRL(resolvedPriceNumber)}
@@ -746,7 +746,7 @@ export function IssueTicketSheet({
               !selectedType
             }
             className={
-              'bg-gradient-to-r from-localis-event to-rose-600 hover:from-localis-event hover:to-rose-500 text-white shadow-lg shadow-rose-900/20 ' +
+              'bg-gradient-to-r from-primary to-primary/90 hover:from-primary hover:to-primary/90 text-white shadow-lg shadow-soft ' +
               (isSoldOut ? 'cursor-not-allowed opacity-70' : '')
             }
           >

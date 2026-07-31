@@ -29,10 +29,6 @@ Desenvolver uma aplicação frontend para gerenciar um sistema de gerenciamento 
 
 ## 💻 Interfaces
 
-[Figma](https://www.figma.com/file/ztqsEQWF8BXskx8UerVztk/OnEntree---Desafio-Fullstack?type=design&node-id=13%3A156&mode=design&t=2b29VVsfWoTXCOsS-1)
-
-![Grid](https://github.com/mb-data/Desafio-Node-Fullstack/assets/30670086/f35eb37a-e6c3-4551-a9ae-9f7a843d4b4c)
-
 ## 🥇 Diferenciais:
 
 1. Testes unitários utilizando, por exemplo, Jest e React Testing Library.
@@ -70,8 +66,6 @@ Desenvolver uma aplicação frontend para gerenciar um sistema de gerenciamento 
 
 - Com base nas telas propostas no Figma abaixo, modele o banco de dados utilizando a ferramenta que preferir.
 - Lembre de adicionar ao seu repositório o link ou imagem da modelagem.
-  
-[Figma](https://www.figma.com/file/ztqsEQWF8BXskx8UerVztk/OnEntree---Desafio-Fullstack?type=design&node-id=13%3A156&mode=design&t=2b29VVsfWoTXCOsS-1)
 
 ### 4. Validações e Erros:
 

@@ -244,7 +244,7 @@ export function EventTicketGateTabs({
     <Card className="rounded-3xl border-white/5 overflow-hidden">
       <CardHeader className="pb-3 pt-5 border-b border-border/50">
         <CardTitle className="text-base flex items-center gap-2">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 ring-1 ring-rose-500/20">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
             <BadgeCheck className="h-3.5 w-3.5" />
           </span>
           Pilar 5 · Tipos de ingresso e portões
@@ -265,20 +265,20 @@ export function EventTicketGateTabs({
             >
               <TabsTrigger
                 value="ticket-types"
-                className="text-xs sm:text-sm data-[state=active]:bg-rose-500/15 data-[state=active]:text-rose-300 data-[state=active]:ring-1 data-[state=active]:ring-rose-500/30"
+                className="text-xs sm:text-sm data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:ring-1 data-[state=active]:ring-primary/30"
               >
                 <Ticket className="h-3.5 w-3.5 mr-1.5" /> Tipos de ingresso
               </TabsTrigger>
               <TabsTrigger
                 value="gates"
-                className="text-xs sm:text-sm data-[state=active]:bg-emerald-500/15 data-[state=active]:text-emerald-300 data-[state=active]:ring-1 data-[state=active]:ring-emerald-500/30"
+                className="text-xs sm:text-sm data-[state=active]:bg-accent/15 data-[state=active]:text-accent data-[state=active]:ring-1 data-[state=active]:ring-accent/30"
               >
                 <DoorOpen className="h-3.5 w-3.5 mr-1.5" /> Portões do local
               </TabsTrigger>
               {eventId && (
                 <TabsTrigger
                   value="tickets"
-                  className="text-xs sm:text-sm data-[state=active]:bg-localis-event/15 data-[state=active]:text-rose-200 data-[state=active]:ring-1 data-[state=active]:ring-localis-event/30"
+                  className="text-xs sm:text-sm data-[state=active]:bg-primary/15 data-[state=active]:text-primary-foreground data-[state=active]:ring-1 data-[state=active]:ring-primary/30"
                 >
                   <QrCode className="h-3.5 w-3.5 mr-1.5" /> Ingressos emitidos
                   {ticketsQ.data?.total ? (
@@ -307,7 +307,7 @@ export function EventTicketGateTabs({
               </div>
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-500 hover:to-rose-500 text-white shadow-lg shadow-rose-900/20"
+                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary hover:to-primary/90 text-white shadow-lg shadow-soft"
                 onClick={() => setTtDialogMode({ mode: 'create' })}
               >
                 <Plus className="h-4 w-4 mr-1.5" /> Novo tipo
@@ -364,7 +364,7 @@ export function EventTicketGateTabs({
               </div>
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-500 hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-accent to-accent/90 hover:from-accent hover:to-accent/90 text-white shadow-lg shadow-soft disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={!venueId}
                 onClick={() => setGateDialogMode({ mode: 'create' })}
               >
@@ -437,7 +437,7 @@ export function EventTicketGateTabs({
                       onChange={(e) =>
                         setTicketFilterGateId(e.target.value || null)
                       }
-                      className="h-9 px-3 rounded-lg border border-border/60 bg-muted/20 text-sm focus:outline-none focus:ring-2 focus:ring-localis-event/40 focus:border-white/20"
+                      className="h-9 px-3 rounded-lg border border-border/60 bg-muted/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-white/20"
                     >
                       <option value="">Todos os portões</option>
                       {(gates.data?.items ?? []).map((g) => (
@@ -575,7 +575,7 @@ export function EventTicketGateTabs({
                           <TableCell className="py-3">
                             {t.gate ? (
                               <div className="flex items-center gap-2">
-                                <span className="inline-flex h-6 items-center gap-1.5 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 text-[10px] font-mono uppercase text-emerald-300 ring-1 ring-emerald-500/10">
+                                <span className="inline-flex h-6 items-center gap-1.5 rounded-md border border-accent/20 bg-accent/10 px-2 text-[10px] font-mono uppercase text-accent ring-1 ring-accent/10">
                                   <DoorOpen className="h-3 w-3" />
                                   {t.gate.identifier}
                                 </span>
@@ -600,7 +600,7 @@ export function EventTicketGateTabs({
                               </span>
                             )}
                           </TableCell>
-                          <TableCell className="py-3 text-sm font-mono font-bold text-localis-event">
+                          <TableCell className="py-3 text-sm font-mono font-bold text-primary">
                             {currencyBRL(Number(t.pricePaid || 0))}
                           </TableCell>
                           <TableCell className="py-3">
@@ -733,7 +733,7 @@ function TicketTypeCard({
             </Badge>
           </div>
           <div className="mt-1.5 flex items-center gap-1.5 text-xs">
-            <IndianRupee className="h-3.5 w-3.5 text-rose-400" />
+            <IndianRupee className="h-3.5 w-3.5 text-primary" />
             <span className="font-mono font-semibold text-foreground">
               {currencyBRL(Number(item.price))}
             </span>
@@ -751,7 +751,7 @@ function TicketTypeCard({
             variant="ghost"
             size="icon"
             onClick={onDelete}
-            className="h-8 w-8 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+            className="h-8 w-8 text-primary hover:text-primary/90 hover:bg-primary/10"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -914,8 +914,8 @@ function TicketTypeDialog({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/60 to-rose-900/60">
-              <Ticket className="h-4 w-4 text-rose-50" />
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary/40 to-primary-foreground/15">
+              <Ticket className="h-4 w-4 text-primary-foreground" />
             </span>
             {isEdit ? 'Editar tipo de ingresso' : 'Novo tipo de ingresso'}
           </DialogTitle>
@@ -1005,7 +1005,7 @@ function TicketTypeDialog({
             <Button
               type="submit"
               disabled={busy || !form.formState.isValid}
-              className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-500 hover:to-rose-500 text-white shadow-lg shadow-rose-900/20"
+              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary hover:to-primary/90 text-white shadow-lg shadow-soft"
             >
               {busy ? 'Salvando…' : isEdit ? 'Salvar alterações' : 'Criar tipo'}
             </Button>
@@ -1065,12 +1065,12 @@ function GateRow({
     <div className="rounded-2xl border border-border/60 bg-muted/10 overflow-hidden">
       <div className="p-4 flex items-start gap-3 justify-between flex-wrap">
         <div className="min-w-0 flex items-start gap-3">
-          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-emerald-500/60 via-emerald-500/40 to-emerald-900/40 grid place-items-center ring-1 ring-white/10">
-            <DoorOpen className="h-5 w-5 text-emerald-100" />
+          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-accent/40 via-accent/30 to-accent-foreground/15 grid place-items-center ring-1 ring-white/10">
+            <DoorOpen className="h-5 w-5 text-accent-foreground" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="outline" className="font-mono text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
+              <Badge variant="outline" className="font-mono text-accent border-accent/20 bg-accent/10">
                 {item.identifier}
               </Badge>
               <p className="font-bold tracking-tight truncate max-w-[28ch]">{item.name}</p>
@@ -1121,7 +1121,7 @@ function GateRow({
             variant="ghost"
             size="icon"
             onClick={onDelete}
-            className="h-8 w-8 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+            className="h-8 w-8 text-primary hover:text-primary/90 hover:bg-primary/10"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -1140,13 +1140,13 @@ function GateRow({
                   className={cn(
                     'flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer select-none transition-colors',
                     checked
-                      ? 'bg-rose-500/10 border-rose-500/30'
+                      ? 'bg-primary/10 border-primary/20'
                       : 'bg-transparent border-border/40 hover:border-border/70 hover:bg-muted/20',
                   )}
                 >
                   <input
                     type="checkbox"
-                    className="mt-1 h-3.5 w-3.5 accent-rose-500"
+                    className="mt-1 h-3.5 w-3.5 accent-primary"
                     checked={checked}
                     onChange={() => toggleOne(t.id)}
                   />
@@ -1238,8 +1238,8 @@ function GateDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/60 to-emerald-900/60">
-              <DoorOpen className="h-4 w-4 text-emerald-50" />
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-accent/40 to-accent-foreground/15">
+              <DoorOpen className="h-4 w-4 text-accent-foreground" />
             </span>
             {isEdit ? 'Editar portão' : 'Novo portão'}
           </DialogTitle>
@@ -1309,7 +1309,7 @@ function GateDialog({
             <Button
               type="submit"
               disabled={busy || !form.formState.isValid}
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-500 hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/20"
+              className="bg-gradient-to-r from-accent to-accent/90 hover:from-accent hover:to-accent/90 text-white shadow-lg shadow-soft"
             >
               {busy ? 'Salvando…' : isEdit ? 'Salvar alterações' : 'Criar portão'}
             </Button>

@@ -24,7 +24,7 @@ export interface CreateGatePayload {
   description?: string;
 }
 
-export interface UpdateGatePayload extends Partial<CreateGatePayload> {}
+export type UpdateGatePayload = Partial<CreateGatePayload>
 
 export async function getGateStatsCount() {
   return apiFetch<{ total: number }>(`/gates/stats/count`);

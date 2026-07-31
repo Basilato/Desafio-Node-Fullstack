@@ -35,22 +35,22 @@ export const CATEGORY_META: Record<EventCategoryKey, CategoryMetaItem> = {
 };
 
 const categoryBadgeVariants = cva(
-  'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ring-1 ring-inset whitespace-nowrap transition-transform duration-200 hover:-translate-y-0.5',
+  'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ring-1 ring-inset whitespace-nowrap transition-all duration-150',
   {
     variants: {
       tone: {
         futebol:
-          'bg-[hsl(var(--cat-futebol)/0.14)] text-[hsl(var(--cat-futebol))] ring-[hsl(var(--cat-futebol)/0.35)]',
+          'bg-[color-mix(in_oklab,var(--cat-futebol)_14%,transparent)] text-[var(--cat-futebol)] ring-[color-mix(in_oklab,var(--cat-futebol)_35%,transparent)]',
         show:
-          'bg-[hsl(var(--cat-show)/0.16)] text-[hsl(var(--cat-show))] ring-[hsl(var(--cat-show)/0.4)]',
+          'bg-[color-mix(in_oklab,var(--cat-show)_16%,transparent)] text-[var(--cat-show)] ring-[color-mix(in_oklab,var(--cat-show)_40%,transparent)]',
         teatro:
-          'bg-[hsl(var(--cat-teatro)/0.16)] text-[hsl(var(--cat-teatro))] ring-[hsl(var(--cat-teatro)/0.4)]',
+          'bg-[color-mix(in_oklab,var(--cat-teatro)_16%,transparent)] text-[var(--cat-teatro)] ring-[color-mix(in_oklab,var(--cat-teatro)_40%,transparent)]',
         festival:
-          'bg-[hsl(var(--cat-festival)/0.16)] text-[hsl(var(--cat-festival))] ring-[hsl(var(--cat-festival)/0.4)]',
+          'bg-[color-mix(in_oklab,var(--cat-festival)_16%,transparent)] text-[var(--cat-festival)] ring-[color-mix(in_oklab,var(--cat-festival)_40%,transparent)]',
         esporte:
-          'bg-[hsl(var(--cat-esporte)/0.16)] text-[hsl(var(--cat-esporte))] ring-[hsl(var(--cat-esporte)/0.4)]',
+          'bg-[color-mix(in_oklab,var(--cat-esporte)_16%,transparent)] text-[var(--cat-esporte)] ring-[color-mix(in_oklab,var(--cat-esporte)_40%,transparent)]',
         outro:
-          'bg-muted text-muted-foreground ring-border',
+          'bg-muted text-muted-foreground ring-border/60',
       },
       size: {
         sm: 'px-2.5 py-0.5 text-[10px]',

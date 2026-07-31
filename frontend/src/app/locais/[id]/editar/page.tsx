@@ -83,8 +83,8 @@ export default function EditarLocalPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 grid place-items-center rounded-2xl bg-gradient-to-br from-localis-venue/80 to-emerald-900/70 ring-1 ring-white/10 shadow-lg shadow-emerald-900/30">
-            <Building2 className="h-6 w-6 text-emerald-100" />
+          <div className="h-12 w-12 grid place-items-center rounded-2xl bg-gradient-to-br from-accent/50 to-accent-foreground/15 ring-1 ring-border/40 shadow-soft">
+            <Building2 className="h-6 w-6 text-accent-foreground/90" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Editar local</h1>
@@ -99,7 +99,7 @@ export default function EditarLocalPage() {
         <CardHeader className="border-b border-border/50 pb-5">
           <CardTitle className="text-xl">Dados do local</CardTitle>
           <CardDescription>
-            Os campos marcados com <span className="text-emerald-400">*</span> são
+            Os campos marcados com <span className="text-accent">*</span> são
             obrigatórios.
           </CardDescription>
         </CardHeader>

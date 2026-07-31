@@ -94,7 +94,7 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
       <CardHeader className="pb-4 pt-5 border-b border-border/50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <CardTitle className="text-base flex items-center gap-2">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
               <Ticket className="h-3.5 w-3.5" />
             </span>
             Capacidade, ocupação e tipos
@@ -127,7 +127,7 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
         <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
           <div className="flex flex-wrap items-start justify-between gap-5 mb-4">
             <div className="inline-flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
                 <Ticket className="h-4.5 w-4.5" />
               </span>
               <div>
@@ -148,10 +148,10 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
                 className={cn(
                   'text-[11px] font-semibold uppercase tracking-wider opacity-80',
                   soldOut
-                    ? 'text-rose-400'
+                    ? 'text-destructive'
                     : near
-                      ? 'text-amber-400'
-                      : 'text-localis-event',
+                      ? 'text-warning'
+                      : 'text-primary',
                 )}
               >
                 Ocupação
@@ -160,10 +160,10 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
                 className={cn(
                   'text-3xl font-black font-mono tracking-tight leading-none',
                   soldOut
-                    ? 'text-rose-400'
+                    ? 'text-destructive'
                     : near
-                      ? 'text-amber-400'
-                      : 'text-localis-event',
+                      ? 'text-warning'
+                      : 'text-primary',
                 )}
               >
                 {pct.toFixed(0)}%
@@ -176,10 +176,10 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
             className={
               'h-2.5 rounded-full bg-muted/50 [&>div]:transition-all [&>div]:duration-500 [&>div]:rounded-full ' +
               (soldOut
-                ? '[&>div]:bg-gradient-to-r [&>div]:from-rose-500 [&>div]:to-rose-400'
+                ? '[&>div]:bg-gradient-to-r [&>div]:from-destructive [&>div]:to-destructive/90'
                 : near
-                  ? '[&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-amber-400'
-                  : '[&>div]:bg-gradient-to-r [&>div]:from-localis-event [&>div]:to-rose-400')
+                  ? '[&>div]:bg-gradient-to-r [&>div]:from-warning [&>div]:to-warning/90'
+                  : '[&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-primary/90')
             }
           />
 
@@ -201,7 +201,7 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
         <div className="rounded-2xl border border-border/60 bg-muted/10 p-5 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold tracking-tight inline-flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary ring-1 ring-primary/20">
                 <Ticket className="h-3.5 w-3.5" />
               </span>
               Vendas por tipo de ingresso
@@ -218,7 +218,7 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
                 Nenhum ingresso emitido ainda
               </p>
               <p className="text-xs text-muted-foreground/80">
-                Use o botão <strong>"Emitir ingresso"</strong> no topo para cadastrar o primeiro.
+                Use o botão <strong>&quot;Emitir ingresso&quot;</strong> no topo para cadastrar o primeiro.
               </p>
             </div>
           ) : (
@@ -236,8 +236,8 @@ export function EventCapacityCard({ eventId }: { eventId: string }) {
                   >
                     <div className="flex items-center justify-between gap-3 mb-2.5">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="h-9 w-9 shrink-0 rounded-lg bg-gradient-to-br from-localis-event/30 via-localis-event/20 to-rose-900/20 ring-1 ring-white/10 grid place-items-center">
-                          <Ticket className="h-4 w-4 text-rose-300" />
+                        <div className="h-9 w-9 shrink-0 rounded-lg bg-gradient-to-br from-primary/30 via-primary/20 to-primary-foreground/15 ring-1 ring-white/10 grid place-items-center">
+                          <Ticket className="h-4 w-4 text-primary-foreground" />
                         </div>
                         <div className="min-w-0">
                           <p className="font-bold tracking-tight truncate max-w-[28ch]">

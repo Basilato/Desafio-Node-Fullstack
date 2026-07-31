@@ -15,15 +15,14 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="outline"
-      size="icon"
+      variant="secondary"
+      size="icon-sm"
       aria-label={isDark ? 'Ativar tema claro' : 'Ativar tema escuro'}
-      className="rounded-full h-9 w-9 border-white/10 bg-white/5 backdrop-blur-sm
-        hover:bg-white/10 hover:border-white/20 transition-colors"
+      className="relative overflow-hidden"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
-      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-300" />
-      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-sky-300" />
+      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all duration-200 dark:-rotate-90 dark:scale-0 text-amber-500" />
+      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all duration-200 dark:rotate-0 dark:scale-100 text-sky-400" />
     </Button>
   );
 }

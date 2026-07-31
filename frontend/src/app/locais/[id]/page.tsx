@@ -209,12 +209,12 @@ export default function VenueDetailPage() {
           href="/locais"
           className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
         >
-          <Building2 className="h-3.5 w-3.5 text-localis-venue" />
+          <Building2 className="h-3.5 w-3.5 text-accent" />
           Locais
         </Link>
         <ChevronRight className="h-3 w-3 opacity-40" />
         <span className="text-foreground font-semibold inline-flex items-center gap-1.5 max-w-[40ch] truncate">
-          <MapPin className="h-3.5 w-3.5 text-localis-venue" />
+          <MapPin className="h-3.5 w-3.5 text-accent" />
           {loadingVenue ? 'Carregando…' : venue?.name ?? 'Local não encontrado'}
         </span>
       </nav>
@@ -230,13 +230,13 @@ export default function VenueDetailPage() {
       {!loadingVenue && !errorVenue && venue && (
         <>
           {/* Hero + CTA */}
-          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-localis-venue/20 via-localis-venue/5 to-transparent ring-1 ring-white/5">
-            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-localis-venue/10 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+          <section className="relative overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-accent/20 via-accent/5 to-transparent ring-1 ring-border/40">
+            <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
             <div className="relative p-6 sm:p-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-start gap-4 min-w-0 flex-1">
-                <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-localis-venue via-localis-venue/80 to-emerald-900/70 ring-1 ring-white/15 grid place-items-center shadow-xl shadow-emerald-900/20">
-                  <Building2 className="h-8 w-8 text-emerald-50" strokeWidth={2.1} />
+                <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-accent via-accent/80 to-accent-foreground/15 ring-1 ring-white/15 grid place-items-center shadow-xl shadow-soft">
+                  <Building2 className="h-8 w-8 text-accent-foreground" strokeWidth={2.1} />
                 </div>
                 <div className="min-w-0 space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -247,13 +247,13 @@ export default function VenueDetailPage() {
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
                     {venue.city && (
                       <span className="inline-flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4 text-localis-venue" />
+                        <MapPin className="h-4 w-4 text-accent" />
                         {venue.city}
                         {venue.state ? ` · ${venue.state}` : ''}
                       </span>
                     )}
                     <span className="inline-flex items-center gap-1.5">
-                      <Users className="h-4 w-4 text-localis-venue" />
+                      <Users className="h-4 w-4 text-accent" />
                       Capacidade de{' '}
                       <strong className="text-foreground">
                         {venue.capacity.toLocaleString('pt-BR')}
@@ -281,7 +281,7 @@ export default function VenueDetailPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-rose-500/20 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 hover:border-rose-500/40"
+                  className="border-primary/20 text-primary hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                   onClick={() => setDeleting(true)}
                 >
                   <Trash2 className="h-4 w-4 mr-1.5" /> Excluir
@@ -293,10 +293,10 @@ export default function VenueDetailPage() {
           {/* Grid principal */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Ficha e contato */}
-            <Card className="rounded-3xl border-white/5 overflow-hidden">
+            <Card className="rounded-3xl border-border/40 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 text-accent ring-1 ring-accent/20">
                     <MapPin className="h-3.5 w-3.5" />
                   </span>
                   Ficha do local
@@ -351,11 +351,11 @@ export default function VenueDetailPage() {
             </Card>
 
             {/* CRUD Portões + liberações */}
-            <Card className="rounded-3xl border-white/5 lg:col-span-2 overflow-hidden">
+            <Card className="rounded-3xl border-border/40 lg:col-span-2 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 text-accent ring-1 ring-accent/20">
                       <DoorOpen className="h-3.5 w-3.5" />
                     </span>
                     Portões e acesso
@@ -383,7 +383,7 @@ export default function VenueDetailPage() {
                     size="sm"
                     type="button"
                     onClick={() => setGateDialogMode({ mode: 'create' })}
-                    className="bg-gradient-to-r from-localis-venue to-emerald-700 hover:from-localis-venue hover:to-emerald-600 text-white shadow-lg shadow-emerald-900/20 whitespace-nowrap"
+                    className="bg-gradient-to-r from-accent to-accent/90 hover:from-accent hover:to-accent/90 text-white shadow-lg shadow-soft whitespace-nowrap"
                   >
                     <Plus className="h-4 w-4 mr-1.5" /> Novo portão
                   </Button>
@@ -423,11 +423,11 @@ export default function VenueDetailPage() {
           </div>
 
           {/* Eventos recentes neste local */}
-          <Card className="rounded-3xl border-white/5 overflow-hidden">
+          <Card className="rounded-3xl border-border/40 overflow-hidden">
             <CardHeader className="pb-4 pt-5 border-b border-border/50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
                     <CalendarDays className="h-3.5 w-3.5" />
                   </span>
                   Eventos neste local
@@ -448,7 +448,7 @@ export default function VenueDetailPage() {
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-16 rounded-2xl border border-white/5 bg-muted/10 animate-pulse"
+                      className="h-16 rounded-2xl border border-border/40 bg-muted/10 animate-pulse"
                       style={{ opacity: 0.6 + (i * 0.12) % 0.35 }}
                     />
                   ))}
@@ -470,8 +470,8 @@ export default function VenueDetailPage() {
                         onClick={() => router.push(`/eventos/${e.id}`)}
                         className="w-full text-left p-5 sm:p-6 flex items-start gap-4 hover:bg-muted/20 transition-colors group"
                       >
-                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br from-localis-event-muted/60 via-localis-event/40 to-rose-900/40 ring-1 ring-white/10 grid place-items-center">
-                          <PartyPopper className="h-5 w-5 text-rose-200" />
+                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br from-primary/30 via-primary/20 to-primary-foreground/15 ring-1 ring-white/10 grid place-items-center">
+                          <PartyPopper className="h-5 w-5 text-primary" />
                         </div>
                         <div className="min-w-0 flex-1 space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
@@ -480,7 +480,7 @@ export default function VenueDetailPage() {
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span className="inline-flex items-center gap-1.5">
-                              <Clock className="h-3.5 w-3.5 text-localis-event" />
+                              <Clock className="h-3.5 w-3.5 text-primary" />
                               Início:{' '}
                               <span className="font-mono text-foreground/90">
                                 {formatBR(e.startDate)}
@@ -496,7 +496,7 @@ export default function VenueDetailPage() {
                         </div>
                         <Badge
                           variant="outline"
-                          className="hidden sm:inline-flex items-center gap-1 rounded-full border-border/70 text-muted-foreground group-hover:text-localis-event group-hover:border-localis-event/30 transition-colors"
+                          className="hidden sm:inline-flex items-center gap-1 rounded-full border-border/70 text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-colors"
                         >
                           Ver detalhes <ArrowRight className="h-3.5 w-3.5" />
                         </Badge>
@@ -515,8 +515,8 @@ export default function VenueDetailPage() {
         <SheetContent className="sm:max-w-xl flex flex-col">
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-venue/70 to-emerald-900/60">
-                <Pencil className="h-4 w-4 text-emerald-50" />
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-accent/50 to-accent-foreground/15">
+                <Pencil className="h-4 w-4 text-accent-foreground" />
               </span>
               Editar local
             </SheetTitle>
@@ -647,7 +647,7 @@ function EmptyBox({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 py-10 px-5 bg-muted/15">
-      <div className="h-11 w-11 rounded-2xl bg-muted/40 ring-1 ring-white/5 grid place-items-center">
+      <div className="h-11 w-11 rounded-2xl bg-muted/40 ring-1 ring-border/40 grid place-items-center">
         {icon}
       </div>
       <div className="text-center space-y-1.5 max-w-sm">
@@ -661,12 +661,12 @@ function EmptyBox({
 function LoadingState() {
   return (
     <div className="space-y-6">
-      <div className="h-40 rounded-3xl border border-white/5 bg-muted/10 animate-pulse" />
+      <div className="h-40 rounded-3xl border border-border/40 bg-muted/10 animate-pulse" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="h-72 rounded-3xl border border-white/5 bg-muted/10 animate-pulse lg:col-span-2" />
-        <div className="h-72 rounded-3xl border border-white/5 bg-muted/10 animate-pulse" />
+        <div className="h-72 rounded-3xl border border-border/40 bg-muted/10 animate-pulse lg:col-span-2" />
+        <div className="h-72 rounded-3xl border border-border/40 bg-muted/10 animate-pulse" />
       </div>
-      <div className="h-80 rounded-3xl border border-white/5 bg-muted/10 animate-pulse" />
+      <div className="h-80 rounded-3xl border border-border/40 bg-muted/10 animate-pulse" />
     </div>
   );
 }
@@ -681,9 +681,9 @@ function ErrorState({
   onRetry: () => void;
 }) {
   return (
-    <Card className="rounded-3xl border-rose-500/20">
+    <Card className="rounded-3xl border-primary/20">
       <CardContent className="p-10 flex flex-col items-center text-center gap-4">
-        <div className="h-14 w-14 rounded-2xl bg-rose-500/10 text-rose-300 grid place-items-center ring-1 ring-rose-500/20">
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 text-primary grid place-items-center ring-1 ring-primary/20">
           <Building2 className="h-6 w-6" />
         </div>
         <div className="space-y-1.5 max-w-md">
@@ -790,8 +790,8 @@ function GateDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-venue/60 to-emerald-900/60">
-              <DoorOpen className="h-4 w-4 text-emerald-50" />
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-accent/40 to-accent-foreground/15">
+              <DoorOpen className="h-4 w-4 text-accent-foreground" />
             </span>
             {isEdit ? 'Editar portão' : 'Novo portão'}
           </DialogTitle>
@@ -816,7 +816,7 @@ function GateDialog({
                 {...form.register('name')}
               />
               {form.formState.errors.name ? (
-                <p className="text-xs text-rose-400">
+                <p className="text-xs text-primary">
                   {form.formState.errors.name.message}
                 </p>
               ) : null}
@@ -830,7 +830,7 @@ function GateDialog({
                 {...form.register('identifier')}
               />
               {form.formState.errors.identifier ? (
-                <p className="text-xs text-rose-400">
+                <p className="text-xs text-primary">
                   {form.formState.errors.identifier.message}
                 </p>
               ) : null}
@@ -846,7 +846,7 @@ function GateDialog({
               {...form.register('description')}
             />
             {form.formState.errors.description ? (
-              <p className="text-xs text-rose-400">
+              <p className="text-xs text-primary">
                 {String(form.formState.errors.description.message ?? '')}
               </p>
             ) : null}
@@ -863,7 +863,7 @@ function GateDialog({
             <Button
               type="submit"
               disabled={busy || !form.formState.isValid || !venueId}
-              className="bg-gradient-to-r from-localis-venue to-emerald-700 hover:from-localis-venue hover:to-emerald-600 text-white shadow-lg shadow-emerald-900/20"
+              className="bg-gradient-to-r from-accent to-accent/90 hover:from-accent hover:to-accent/90 text-white shadow-lg shadow-soft"
             >
               {busy ? 'Salvando…' : isEdit ? 'Salvar alterações' : 'Criar portão'}
             </Button>
@@ -923,14 +923,14 @@ function GateRow({
     <div className="rounded-2xl border border-border/60 bg-muted/10 overflow-hidden">
       <div className="p-4 flex items-start gap-3 justify-between flex-wrap">
         <div className="min-w-0 flex items-start gap-3">
-          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-localis-venue/60 via-localis-venue/40 to-emerald-900/40 grid place-items-center ring-1 ring-white/10">
-            <DoorOpen className="h-5 w-5 text-emerald-100" />
+          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-accent/40 via-accent/30 to-accent-foreground/15 grid place-items-center ring-1 ring-white/10">
+            <DoorOpen className="h-5 w-5 text-accent-foreground" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge
                 variant="outline"
-                className="font-mono text-localis-venue border-localis-venue/30 bg-localis-venue/10"
+                className="font-mono text-accent border-accent/30 bg-accent/10"
               >
                 {item.identifier}
               </Badge>
@@ -981,7 +981,7 @@ function GateRow({
             variant="ghost"
             size="sm"
             onClick={onDelete}
-            className="h-8 px-2.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+            className="h-8 px-2.5 text-primary hover:text-primary hover:bg-primary/10"
           >
             <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Excluir
           </Button>
@@ -990,10 +990,10 @@ function GateRow({
 
       <Separator />
 
-      <div className="px-4 py-4 sm:px-5 sm:py-4 space-y-3 bg-gradient-to-br from-transparent via-transparent to-localis-venue/5">
+      <div className="px-4 py-4 sm:px-5 sm:py-4 space-y-3 bg-gradient-to-br from-transparent via-transparent to-accent/5">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5 text-localis-venue" />
+            <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
             Tipos liberados neste portão
           </Label>
           {dirty ? (
@@ -1002,7 +1002,7 @@ function GateRow({
               type="button"
               onClick={() => void save()}
               disabled={assignMut.isPending}
-              className="h-8 px-3 bg-localis-venue hover:bg-localis-venue/90 text-white shadow-md shadow-emerald-900/20"
+              className="h-8 px-3 bg-accent hover:bg-accent/90 text-white shadow-md shadow-soft"
             >
               <Save className="h-3.5 w-3.5 mr-1.5" />
               {assignMut.isPending ? 'Salvando…' : 'Salvar liberações'}
@@ -1032,13 +1032,13 @@ function GateRow({
                   className={cn(
                     'group flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-all',
                     checked
-                      ? 'border-localis-venue ring-2 ring-localis-venue/25 bg-localis-venue/8'
+                      ? 'border-accent ring-2 ring-accent/25 bg-accent/8'
                       : 'border-border/60 bg-background/20 hover:bg-muted/30 hover:border-white/15',
                   )}
                 >
                   <input
                     type="checkbox"
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-border bg-muted/20 text-localis-venue focus:ring-localis-venue cursor-pointer accent-localis-venue"
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-border bg-muted/20 text-accent focus:ring-accent cursor-pointer accent-accent"
                     checked={checked}
                     onChange={() => toggleOne(tt.id)}
                   />

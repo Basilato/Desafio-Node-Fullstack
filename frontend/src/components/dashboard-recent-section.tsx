@@ -1,33 +1,48 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, MoreHorizontal, Plus } from 'lucide-react';
 import {
   Card,
   CardContent,
   CardHeader,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 type SectionTone = 'venue' | 'event';
 
 const toneStyles: Record<SectionTone, {
-  card: string;
-  titleBar: string;
-  titleDot: string;
-  cta: string;
+  accent: string;
+  accentBg: string;
+  accentRing: string;
+  accentText: string;
+  createLabel: string;
+  createHref: string;
+  headerHint: string;
 }> = {
   venue: {
-    card: 'localis-card-glow border-emerald-500/10 bg-localis-surface/50',
-    titleBar: 'bg-localis-venue-muted/20 text-localis-venue-foreground',
-    titleDot: 'bg-emerald-400 shadow-[0_0_16px] shadow-emerald-400/60',
-    cta: 'text-emerald-300 hover:text-emerald-200 hover:bg-emerald-300/5',
+    accent: 'bg-accent',
+    accentBg: 'bg-accent/8',
+    accentRing: 'ring-accent/25',
+    accentText: 'text-accent',
+    createLabel: 'Novo local',
+    createHref: '/locais/novo',
+    headerHint: 'Capacidade · Portões · Contato',
   },
   event: {
-    card: 'localis-card-glow border-rose-500/10 bg-localis-surface/50',
-    titleBar: 'bg-localis-event-muted/20 text-localis-event-foreground',
-    titleDot: 'bg-rose-400 shadow-[0_0_16px] shadow-rose-400/60',
-    cta: 'text-rose-300 hover:text-rose-200 hover:bg-rose-300/5',
+    accent: 'bg-primary',
+    accentBg: 'bg-primary/8',
+    accentRing: 'ring-primary/25',
+    accentText: 'text-primary',
+    createLabel: 'Novo evento',
+    createHref: '/eventos/novo',
+    headerHint: 'Local · Data · Ingressos',
   },
 };
 
@@ -41,6 +56,7 @@ interface RecentSectionProps {
   items: ReactNode[];
   className?: string;
   headerExtra?: ReactNode;
+  columnsHint?: string;
 }
 
 export function RecentSection({
@@ -53,50 +69,119 @@ export function RecentSection({
   items,
   className,
   headerExtra,
+  columnsHint,
 }: RecentSectionProps) {
   const s = toneStyles[tone];
   const hasItems = items.length > 0;
   return (
     <Card
       className={cn(
-        'rounded-3xl overflow-hidden border backdrop-blur-sm transition-shadow',
-        s.card,
+        'group relative overflow-hidden rounded-3xl border border-border/80 bg-card shadow-subtle transition-all duration-200 hover:shadow-pop',
         className,
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-white/5">
-        <div className="flex items-center gap-3 min-w-0">
-          <div
+      <div
+        aria-hidden="true"
+        className={cn(
+          'pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/8 to-transparent opacity-0 transition-opacity group-hover:opacity-100',
+        )}
+      />
+
+      <CardHeader className="flex flex-col gap-4 border-b border-border/60 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <div className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-2xl ring-1', s.accentBg, s.accentRing)}>
+              <span className={cn('h-2.5 w-2.5 rounded-full', s.accent)} />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="truncate text-[1.1rem] font-extrabold tracking-tight md:text-xl">
+                  {title}
+                </h2>
+                <TooltipProvider delayDuration={150}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-muted-foreground/80 transition-colors hover:bg-muted hover:text-foreground" aria-label="Mais informações">
+                        <MoreHorizontal className="h-4 w-4" strokeWidth={2.25} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="start" className="max-w-[28ch] text-[11px] font-medium leading-relaxed">
+                      {columnsHint ?? s.headerHint}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              {description && (
+                <p className="mt-1 line-clamp-1 text-sm text-muted-foreground/90">
+                  {description}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {headerExtra}
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
             className={cn(
-              'inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold',
-              s.titleBar,
+              'h-9 rounded-full px-4 font-semibold ring-1 transition-all active:scale-[0.98]',
+              'border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground',
+              s.accentRing,
             )}
           >
-            <span className={cn('h-2 w-2 rounded-full', s.titleDot)} />
-            {title}
-          </div>
-          {description && (
-            <p className="hidden sm:block text-sm text-muted-foreground truncate max-w-[24ch]">
-              {description}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {headerExtra}
-          <Button asChild variant="ghost" size="sm" className={cn('gap-1.5 rounded-full h-9 px-4 font-semibold', s.cta)}>
+            <Link href={s.createHref}>
+              <Plus className="h-4 w-4" strokeWidth={2.5} />
+              {s.createLabel}
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className={cn(
+              'h-9 rounded-full gap-1.5 px-4 font-semibold',
+              s.accentText,
+              'hover:bg-transparent hover:underline',
+            )}
+          >
             <Link href={seeAllHref}>
               {seeAllLabel}
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowUpRight className="h-4 w-4" strokeWidth={2.25} />
             </Link>
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-5 space-y-2.5">
+
+      <CardContent className="p-5">
         {hasItems ? (
-          <div className="space-y-2.5">{items}</div>
+          <ul className="space-y-2">{items}</ul>
         ) : (
-          <div className="text-sm text-muted-foreground py-10 text-center border border-dashed rounded-2xl border-white/10">
-            {emptyLabel}
+          <div className="relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/80 bg-muted/20 px-6 py-14 text-center">
+            <div className={cn('grid h-12 w-12 place-items-center rounded-2xl ring-1', s.accentBg, s.accentRing)}>
+              <Plus className={cn('h-5 w-5', s.accentText)} strokeWidth={2.25} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground/90">
+                {emptyLabel}
+              </p>
+              <p className="max-w-sm text-xs text-muted-foreground/90">
+                Comece criando o primeiro registro — basta clicar no botão ao lado ou acessar a página dedicada.
+              </p>
+            </div>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className={cn('mt-2 h-9 rounded-full px-4 font-semibold', 'border-border/80', s.accentText)}
+            >
+              <Link href={s.createHref}>
+                <Plus className="h-4 w-4" strokeWidth={2.5} />
+                {s.createLabel}
+              </Link>
+            </Button>
           </div>
         )}
       </CardContent>

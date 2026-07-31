@@ -89,7 +89,7 @@ function DemoCallout() {
   return (
     <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-2">
       <div className="flex items-center gap-2">
-        <ShieldCheck className="h-4 w-4 text-localis-venue" />
+        <ShieldCheck className="h-4 w-4 text-accent" />
         <p className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
           Conta demo do seed
         </p>
@@ -121,8 +121,8 @@ function FeatureRow({
         className={cn(
           'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 ring-white/10',
           tone === 'venue'
-            ? 'bg-gradient-to-br from-localis-venue/60 to-emerald-900/60 text-emerald-100'
-            : 'bg-gradient-to-br from-localis-event/60 to-rose-900/60 text-rose-100',
+            ? 'bg-gradient-to-br from-accent/40 to-accent-foreground/15 text-accent-foreground'
+            : 'bg-gradient-to-br from-primary/40 to-primary-foreground/15 text-primary-foreground',
         )}
       >
         <Icon className="h-4.5 w-4.5" />
@@ -161,7 +161,7 @@ function LoginCard() {
         toast({
           title: (
             <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-localis-venue" />
+              <ShieldCheck className="h-4 w-4 text-accent" />
               Acesso liberado
             </span>
           ),
@@ -198,7 +198,7 @@ function LoginCard() {
         toast({
           title: (
             <span className="inline-flex items-center gap-2">
-              <UserPlus2 className="h-4 w-4 text-localis-event" />
+              <UserPlus2 className="h-4 w-4 text-primary" />
               Conta criada
             </span>
           ),
@@ -308,7 +308,7 @@ function LoginCard() {
               type="submit"
               size="lg"
               disabled={loggingIn}
-              className="w-full h-11 rounded-2xl bg-gradient-to-r from-localis-event to-rose-500 hover:from-localis-event hover:to-rose-400 text-white shadow-lg shadow-rose-900/30"
+              className="w-full h-11 rounded-2xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary hover:to-primary/90 text-white shadow-lg shadow-soft"
             >
               {loggingIn ? (
                 <>
@@ -409,7 +409,7 @@ function LoginCard() {
               type="submit"
               size="lg"
               disabled={registering}
-              className="w-full h-11 rounded-2xl bg-gradient-to-r from-localis-venue to-emerald-600 hover:from-localis-venue hover:to-emerald-500 text-white shadow-lg shadow-emerald-900/30"
+              className="w-full h-11 rounded-2xl bg-gradient-to-r from-accent to-accent/90 hover:from-accent hover:to-accent/90 text-white shadow-lg shadow-soft"
             >
               {registering ? (
                 <>
@@ -450,8 +450,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-localis-venue/10 blur-3xl" />
-        <div className="absolute -bottom-32 -right-16 h-[28rem] w-[28rem] rounded-full bg-localis-event/10 blur-3xl" />
+        <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
+        <div className="absolute -bottom-32 -right-16 h-[28rem] w-[28rem] rounded-full bg-primary/10 blur-3xl" />
       </div>
 
       <div className="relative min-h-screen grid lg:grid-cols-2">
@@ -461,14 +461,14 @@ export default function LoginPage() {
           <div className="space-y-8 max-w-lg">
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
-                <PartyPopper className="h-3.5 w-3.5 text-localis-event" />
+                <PartyPopper className="h-3.5 w-3.5 text-primary" />
                 Nova versão do painel
               </div>
               <h1 className="text-4xl xl:text-5xl font-black tracking-tight leading-[1.05]">
                 Gerencie locais,
                 <br />
                 eventos e portões
-                <span className="bg-gradient-to-r from-localis-venue via-localis-event to-localis-event bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                   {' '}
                   em um só lugar
                 </span>

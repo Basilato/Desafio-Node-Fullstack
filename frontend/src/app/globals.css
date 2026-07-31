@@ -2,241 +2,214 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    --background: oklch(0.985 0.003 255);
+    --foreground: oklch(0.205 0.030 265);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.205 0.030 265);
+
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.205 0.030 265);
+
+    --primary: oklch(0.545 0.224 277.5);
+    --primary-foreground: oklch(1 0 0);
+
+    --secondary: oklch(0.970 0.004 255);
+    --secondary-foreground: oklch(0.205 0.030 265);
+
+    --muted: oklch(0.970 0.004 255);
+    --muted-foreground: oklch(0.540 0.038 260);
+
+    --accent: oklch(0.623 0.128 201.3);
+    --accent-foreground: oklch(1 0 0);
+
+    --destructive: oklch(0.623 0.208 25.3);
+    --destructive-foreground: oklch(1 0 0);
+
+    --border: oklch(0.930 0.006 258);
+    --input: oklch(0.930 0.006 258);
+    --ring: oklch(0.545 0.224 277.5);
+
+    --chart-1: oklch(0.545 0.224 277.5);
+    --chart-2: oklch(0.623 0.128 201.3);
+    --chart-3: oklch(0.675 0.168 45.5);
+    --chart-4: oklch(0.632 0.182 160.5);
+    --chart-5: oklch(0.655 0.156 315);
+
+    --sidebar: oklch(1 0 0);
+    --sidebar-foreground: oklch(0.205 0.030 265);
+    --sidebar-primary: oklch(0.545 0.224 277.5);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.970 0.004 255);
+    --sidebar-accent-foreground: oklch(0.205 0.030 265);
+    --sidebar-border: oklch(0.930 0.006 258);
+    --sidebar-ring: oklch(0.545 0.224 277.5);
+
+    --success: oklch(0.632 0.182 160.5);
+    --success-foreground: oklch(1 0 0);
+    --warning: oklch(0.738 0.158 70);
+    --warning-foreground: oklch(0.245 0.050 45);
+    --info: oklch(0.625 0.155 237);
+    --info-foreground: oklch(1 0 0);
+
+    --elevated: oklch(1 0 0);
+
+    --cat-futebol: oklch(0.640 0.180 240);
+    --cat-show: oklch(0.780 0.160 70);
+    --cat-teatro: oklch(0.700 0.180 310);
+    --cat-festival: oklch(0.680 0.170 170);
+    --cat-esporte: oklch(0.660 0.170 150);
+    --cat-outro: oklch(0.554 0.041 257.4);
+  }
+
+  .dark {
+    --background: oklch(0.165 0.030 265);
+    --foreground: oklch(0.988 0.003 245);
+
+    --card: oklch(0.198 0.032 263);
+    --card-foreground: oklch(0.988 0.003 245);
+
+    --popover: oklch(0.228 0.034 262);
+    --popover-foreground: oklch(0.988 0.003 245);
+
+    --primary: oklch(0.675 0.185 281);
+    --primary-foreground: oklch(0.165 0.030 265);
+
+    --secondary: oklch(0.252 0.030 260);
+    --secondary-foreground: oklch(0.988 0.003 245);
+
+    --muted: oklch(0.252 0.030 260);
+    --muted-foreground: oklch(0.705 0.030 256);
+
+    --accent: oklch(0.655 0.138 201);
+    --accent-foreground: oklch(0.165 0.030 265);
+
+    --destructive: oklch(0.623 0.208 25.3);
+    --destructive-foreground: oklch(0.988 0.003 245);
+
+    --border: oklch(0.295 0.036 260);
+    --input: oklch(0.295 0.036 260);
+    --ring: oklch(0.675 0.185 281);
+
+    --chart-1: oklch(0.675 0.185 281);
+    --chart-2: oklch(0.655 0.138 201);
+    --chart-3: oklch(0.745 0.152 45.5);
+    --chart-4: oklch(0.680 0.175 160.5);
+    --chart-5: oklch(0.700 0.150 315);
+
+    --sidebar: oklch(0.198 0.032 263);
+    --sidebar-foreground: oklch(0.988 0.003 245);
+    --sidebar-primary: oklch(0.675 0.185 281);
+    --sidebar-primary-foreground: oklch(0.165 0.030 265);
+    --sidebar-accent: oklch(0.252 0.030 260);
+    --sidebar-accent-foreground: oklch(0.988 0.003 245);
+    --sidebar-border: oklch(0.295 0.036 260);
+    --sidebar-ring: oklch(0.675 0.185 281);
+
+    --elevated: oklch(0.228 0.034 262);
+
+    --cat-futebol: oklch(0.700 0.160 240);
+    --cat-show: oklch(0.800 0.160 70);
+    --cat-teatro: oklch(0.750 0.160 310);
+    --cat-festival: oklch(0.720 0.150 170);
+    --cat-esporte: oklch(0.700 0.150 150);
+    --cat-outro: oklch(0.711 0.035 256.8);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased min-h-screen font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1, "cv11" 1;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 28%, transparent);
+    color: var(--foreground);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--muted-foreground) 25%, transparent);
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--muted-foreground) 40%, transparent);
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-}
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 6% 10%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 240 6% 10%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 6% 10%;
-
-    --primary: 240 6% 10%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
-
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 6% 10%;
-
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
-
-    --warning: 38 92% 50%;
-    --warning-foreground: 24 10% 10%;
-
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 240 5% 65%;
-
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-
-    --radius: 0.75rem;
-
-    --sidebar: 0 0% 99%;
-    --sidebar-foreground: 240 6% 10%;
-    --sidebar-primary: 240 6% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-border: 240 6% 90%;
-    --sidebar-ring: 240 5% 65%;
-
-    /* Localis brand tokens (light) */
-    --localis-venue: 144 33% 26%;
-    --localis-venue-foreground: 0 0% 98%;
-    --localis-venue-muted: 142 30% 36%;
-
-    --localis-event: 352 42% 28%;
-    --localis-event-foreground: 0 0% 98%;
-    --localis-event-muted: 352 36% 38%;
-
-    --localis-surface: 240 8% 12%;
-    --localis-surface-foreground: 0 0% 98%;
-
-    --localis-gradient-start: 352 32% 16%;
-    --localis-gradient-end: 240 18% 8%;
-
-    /* Category badges */
-    --cat-futebol: 211 80% 45%;
-    --cat-show: 38 85% 45%;
-    --cat-teatro: 280 60% 55%;
-    --cat-festival: 160 55% 45%;
-    --cat-esporte: 140 50% 45%;
-    --cat-outro: 240 4% 48%;
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 
-  .dark {
-    --background: 240 10% 7%;
-    --foreground: 0 0% 98%;
-
-    --card: 240 8% 12%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 8% 12%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 8% 12%;
-
-    --secondary: 240 6% 18%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 6% 18%;
-    --muted-foreground: 240 5% 68%;
-
-    --accent: 240 6% 20%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 98%;
-
-    --success: 142 70% 40%;
-    --success-foreground: 0 0% 98%;
-
-    --warning: 38 92% 50%;
-    --warning-foreground: 24 10% 10%;
-
-    --border: 240 5% 24%;
-    --input: 240 5% 24%;
-    --ring: 240 5% 48%;
-
-    --chart-1: 220 70% 60%;
-    --chart-2: 160 60% 50%;
-    --chart-3: 30 80% 60%;
-    --chart-4: 280 65% 70%;
-    --chart-5: 340 75% 65%;
-
-    --sidebar: 240 9% 9%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 144 33% 40%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 6% 18%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 24%;
-    --sidebar-ring: 240 5% 48%;
-
-    /* Localis brand tokens (dark) */
-    --localis-venue: 144 33% 20%;
-    --localis-venue-foreground: 0 0% 98%;
-    --localis-venue-muted: 144 30% 28%;
-
-    --localis-event: 352 42% 22%;
-    --localis-event-foreground: 0 0% 98%;
-    --localis-event-muted: 352 36% 30%;
-
-    --localis-surface: 240 8% 14%;
-    --localis-surface-foreground: 0 0% 98%;
-
-    --localis-gradient-start: 352 30% 14%;
-    --localis-gradient-end: 240 16% 6%;
-
-    /* Category badges (dark) */
-    --cat-futebol: 211 75% 55%;
-    --cat-show: 38 92% 58%;
-    --cat-teatro: 280 65% 68%;
-    --cat-festival: 160 60% 55%;
-    --cat-esporte: 140 55% 55%;
-    --cat-outro: 240 6% 62%;
-  }
-
-  * {
-    @apply border-border;
-  }
-  html {
-    scroll-behavior: smooth;
-  }
-  body {
-    @apply bg-background text-foreground antialiased min-h-screen font-sans;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
-  }
-  /* Focus visível padrão para acessibilidade (WCAG) */
-  :focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-}
-
-/* ===== Localis — Hero & Section decor (modern + premium) ===== */
-@layer utilities {
-  .localis-hero-bg {
-    position: relative;
-    overflow: hidden;
-    background:
-      radial-gradient(1200px 500px at 15% -10%, hsl(352 50% 28% / 0.55), transparent 60%),
-      radial-gradient(900px 420px at 95% 0%, hsl(144 45% 24% / 0.45), transparent 60%),
-      radial-gradient(600px 600px at 50% 120%, hsl(260 40% 20% / 0.35), transparent 70%),
-      linear-gradient(180deg, hsl(240 12% 8%) 0%, hsl(240 10% 7%) 100%);
-  }
-  .localis-hero-bg::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.05) 1px, transparent 0);
+  .bg-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      color-mix(in oklab, var(--foreground) 7%, transparent) 1px,
+      transparent 0
+    );
     background-size: 22px 22px;
-    mask-image: radial-gradient(ellipse at top, black 40%, transparent 80%);
-    pointer-events: none;
   }
-  .localis-card-glow {
-    position: relative;
-  }
-  .localis-card-glow::after {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: linear-gradient(135deg, hsl(var(--ring) / 0.25), transparent 40%, hsl(var(--ring) / 0.15));
-    pointer-events: none;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    padding: 1px;
-    opacity: 0.9;
-    transition: opacity 0.25s ease;
-  }
-  .localis-card-glow:hover::after {
-    opacity: 1;
-  }
-  .localis-gradient-text {
-    background: linear-gradient(135deg, hsl(352 65% 72%) 0%, hsl(0 0% 98%) 40%, hsl(144 45% 70%) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+
+  .card-elevated {
+    box-shadow:
+      0 1px 2px -1px color-mix(in oklab, var(--foreground) 8%, transparent),
+      0 12px 32px -16px color-mix(in oklab, var(--foreground) 28%, transparent);
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -23,9 +23,9 @@ export interface DashboardQueriesResult {
   venues: VenueRecent[];
   eventsRecent: EventRecent[];
   eventsUpcoming: EventRecent[];
-  venuesTotal: number;
-  eventsTotal: number;
-  ticketsTotal: number;
+  venuesTotal: number | null;
+  eventsTotal: number | null;
+  ticketsTotal: number | null;
   profile: LoggedUser | null;
   isLoading: boolean;
   isFetching: boolean;
@@ -61,19 +61,19 @@ export function useDashboardQueries({
         queryKey: ['venues', 'stats', 'count'] as const,
         queryFn: () => getVenuesStatsCount(),
         staleTime: 2 * 60_000,
-        placeholderData: { total: 0 },
+        placeholderData: undefined,
       },
       {
         queryKey: ['events', 'stats', 'count'] as const,
         queryFn: () => getEventsStatsCount(),
         staleTime: 2 * 60_000,
-        placeholderData: { total: 0 },
+        placeholderData: undefined,
       },
       {
         queryKey: ['events', 'stats', 'tickets'] as const,
         queryFn: () => getEventsStatsTickets(),
         staleTime: 2 * 60_000,
-        placeholderData: { total: 0 },
+        placeholderData: undefined,
       },
       {
         queryKey: ['auth', 'profile'] as const,
@@ -95,9 +95,9 @@ export function useDashboardQueries({
         venues: venuesQ.data ?? [],
         eventsRecent: eventsRecentQ.data ?? [],
         eventsUpcoming: eventsUpcomingQ.data ?? [],
-        venuesTotal: venuesCountQ.data?.total ?? 0,
-        eventsTotal: eventsCountQ.data?.total ?? 0,
-        ticketsTotal: ticketsCountQ.data?.total ?? 0,
+        venuesTotal: venuesCountQ.data?.total ?? null,
+        eventsTotal: eventsCountQ.data?.total ?? null,
+        ticketsTotal: ticketsCountQ.data?.total ?? null,
         profile: (profileQ.data ?? null) as LoggedUser | null,
         isLoading: results.some((r) => r.isLoading),
         isFetching: results.some((r) => r.isFetching),

@@ -56,14 +56,13 @@ export function ConfirmDeleteDialog({
   const canConfirm =
     requiredPhrase.trim().toLowerCase() === confirmText.trim().toLowerCase();
 
-  const toneClass =
-    tone === 'danger'
-      ? 'from-rose-500 to-rose-700 hover:from-rose-500 hover:to-rose-600 shadow-rose-900/40'
-      : 'from-amber-500 to-amber-700 hover:from-amber-500 hover:to-amber-600 shadow-amber-900/40';
+  const toneButtonVariant = tone === 'danger' ? 'destructive' : 'warning';
   const iconClass =
     tone === 'danger'
-      ? 'text-rose-300 bg-rose-500/20 ring-rose-500/30'
-      : 'text-amber-300 bg-amber-500/20 ring-amber-500/30';
+      ? 'text-destructive bg-destructive/15 ring-1 ring-destructive/30'
+      : 'text-warning-foreground bg-warning/20 ring-1 ring-warning/30';
+  const borderTone =
+    tone === 'danger' ? 'border-destructive/30' : 'border-warning/30';
 
   async function handleConfirm() {
     if (!canConfirm) return;
@@ -94,12 +93,12 @@ export function ConfirmDeleteDialog({
         onOpenChange(next);
       }}
     >
-      <DialogContent className="max-w-md border-rose-500/30">
+      <DialogContent className={cn('max-w-md sm:max-w-md', borderTone)}>
         <DialogHeader className="text-left">
           <div className="flex items-start gap-3">
             <div
               className={cn(
-                'h-11 w-11 grid place-items-center rounded-xl ring-1 shrink-0',
+                'h-11 w-11 grid place-items-center rounded-xl shrink-0',
                 iconClass,
               )}
             >
@@ -109,7 +108,7 @@ export function ConfirmDeleteDialog({
               <DialogTitle className="text-base font-bold tracking-tight">
                 {title}
               </DialogTitle>
-              <DialogDescription className="mt-1.5 text-sm text-muted-foreground">
+              <DialogDescription className="mt-1.5 text-sm">
                 {description}
               </DialogDescription>
             </div>
@@ -120,7 +119,7 @@ export function ConfirmDeleteDialog({
           <div>
             <label className="text-xs font-medium text-muted-foreground">
               Para confirmar, digite{' '}
-              <strong className="text-foreground font-bold">{requiredPhrase}</strong>
+              <strong className="text-foreground font-semibold">{requiredPhrase}</strong>
             </label>
             <Input
               autoFocus
@@ -133,12 +132,22 @@ export function ConfirmDeleteDialog({
               placeholder={requiredPhrase}
               className={cn(
                 'mt-1.5 font-mono tracking-wide',
-                canConfirm && 'border-rose-500/60 ring-1 ring-rose-500/40',
+                canConfirm && tone === 'danger' &&
+                  'border-destructive/60 ring-1 ring-destructive/40',
+                canConfirm && tone === 'warning' &&
+                  'border-warning/60 ring-1 ring-warning/40',
               )}
             />
           </div>
           {error && (
-            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-sm text-rose-300 flex items-start gap-2">
+            <div
+              className={cn(
+                'rounded-xl border px-4 py-2.5 text-sm flex items-start gap-2',
+                tone === 'danger'
+                  ? 'border-destructive/30 bg-destructive/10 text-destructive-foreground'
+                  : 'border-warning/30 bg-warning/10 text-warning-foreground',
+              )}
+            >
               <Trash2 className="h-4 w-4 mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -160,12 +169,10 @@ export function ConfirmDeleteDialog({
           </Button>
           <Button
             type="button"
+            variant={toneButtonVariant as 'destructive' | 'warning'}
             disabled={!canConfirm || busy}
             onClick={handleConfirm}
-            className={cn(
-              'bg-gradient-to-r text-white shadow-lg min-w-[140px]',
-              toneClass,
-            )}
+            className="min-w-[140px]"
           >
             {busy ? (
               <span className="inline-flex items-center gap-2">

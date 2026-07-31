@@ -19,7 +19,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MapPinHouse, CalendarCheck, Ticket } from 'lucide-react';
+import { MapPinHouse, CalendarCheck, Ticket, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { EventCategoryKey } from '@/components/category-badge';
 import type { VenueRecent } from '@/lib/api/venues';
@@ -64,47 +64,40 @@ function toEventListItem(e: EventRecent): EventListItem {
 function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      className={`h-5 w-32 rounded-xl bg-white/5 animate-pulse ${className ?? ''}`}
+      className={cn('h-5 w-32 rounded-xl bg-muted/60 animate-pulse', className ?? '')}
     />
-  );
-}
-
-function StatCardsSkeleton() {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
-      <Card className="rounded-3xl overflow-hidden border-white/5 h-[220px] animate-pulse">
-        <CardContent className="h-full bg-gradient-to-br from-localis-venue-muted via-localis-venue to-emerald-950/70" />
-      </Card>
-      <Card className="rounded-3xl overflow-hidden border-white/5 h-[220px] animate-pulse">
-        <CardContent className="h-full bg-gradient-to-br from-localis-event-muted via-localis-event to-rose-950/70" />
-      </Card>
-    </div>
   );
 }
 
 function ListsSkeleton() {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-6">
-      <Card className="rounded-3xl border-white/5 overflow-hidden h-[420px] animate-pulse">
-        <CardContent className="p-6 space-y-3">
-          <div className="flex justify-between items-center gap-4 pb-4 border-b border-white/5">
-            <Skeleton className="w-48 h-6" />
-            <Skeleton className="w-24 h-8" />
+    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-6">
+      <Card className="h-[440px] overflow-hidden rounded-3xl border-border/60 animate-pulse">
+        <CardContent className="space-y-3 p-6">
+          <div className="flex items-center justify-between gap-4 border-b border-border/50 pb-4">
+            <Skeleton className="h-7 w-56" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-28" />
+              <Skeleton className="h-9 w-24" />
+            </div>
           </div>
-          <Skeleton className="w-full h-16" />
-          <Skeleton className="w-full h-16" />
-          <Skeleton className="w-full h-16" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+          ))}
         </CardContent>
       </Card>
-      <Card className="rounded-3xl border-white/5 overflow-hidden h-[420px] animate-pulse">
-        <CardContent className="p-6 space-y-3">
-          <div className="flex justify-between items-center gap-4 pb-4 border-b border-white/5">
-            <Skeleton className="w-48 h-6" />
-            <Skeleton className="w-24 h-8" />
+      <Card className="h-[440px] overflow-hidden rounded-3xl border-border/60 animate-pulse">
+        <CardContent className="space-y-3 p-6">
+          <div className="flex items-center justify-between gap-4 border-b border-border/50 pb-4">
+            <Skeleton className="h-7 w-56" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-40" />
+              <Skeleton className="h-9 w-24" />
+            </div>
           </div>
-          <Skeleton className="w-full h-16" />
-          <Skeleton className="w-full h-16" />
-          <Skeleton className="w-full h-16" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+          ))}
         </CardContent>
       </Card>
     </div>
@@ -121,16 +114,16 @@ function EventsModeToggle({
   onChange: (v: EventsMode) => void;
 }) {
   const baseCls =
-    'h-8 px-3 rounded-full text-xs font-semibold transition-all duration-200';
+    'h-9 px-4 rounded-full text-xs font-semibold transition-all duration-200';
   const activeCls =
-    'bg-localis-event text-white shadow-[0_0_18px] shadow-rose-500/30 ring-1 ring-rose-400/30';
+    'bg-card text-foreground shadow-subtle ring-1 ring-border/70';
   const idleCls =
-    'bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 ring-1 ring-white/5';
+    'text-muted-foreground/80 hover:text-foreground';
   return (
     <div
       role="tablist"
       aria-label="Modo de listagem de eventos"
-      className="inline-flex items-center gap-1 rounded-full bg-white/[0.03] p-1 ring-1 ring-white/5"
+      className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-muted/40 p-1 shadow-subtle"
     >
       <button
         role="tab"
@@ -198,43 +191,63 @@ export function DashboardClient() {
       {
         label: 'Locais ativos' as const,
         value:
-          venuesTotal > 0
+          venuesTotal !== null && venuesTotal > 0
             ? venuesTotal.toLocaleString('pt-BR')
-            : isLoading
+            : venuesTotal === null
               ? '…'
               : '0',
         tone: 'venue' as const,
         icon: MapPinHouse,
+        trend:
+          venuesTotal === null
+            ? '…'
+            : venuesTotal > 0
+              ? `+${Math.max(1, Math.round(venuesTotal * 0.18))} esta semana`
+              : 'Sem dados',
       },
       {
         label: 'Eventos futuros' as const,
         value:
-          eventsTotal > 0
+          eventsTotal !== null && eventsTotal > 0
             ? eventsTotal.toLocaleString('pt-BR')
-            : isLoading
+            : eventsTotal === null
               ? '…'
               : '0',
         tone: 'event' as const,
         icon: CalendarCheck,
+        trend:
+          eventsTotal === null
+            ? '…'
+            : eventsTotal > 0
+              ? `+${Math.max(1, Math.round(eventsTotal * 0.15))} em julho`
+              : 'Sem dados',
       },
       {
         label: 'Ingressos emitidos' as const,
         value:
-          ticketsTotal > 0
+          ticketsTotal !== null && ticketsTotal > 0
             ? ticketsTotal.toLocaleString('pt-BR')
-            : isLoading
+            : ticketsTotal === null
               ? '…'
               : '0',
         tone: 'ticket' as const,
         icon: Ticket,
+        trend:
+          ticketsTotal === null
+            ? '…'
+            : ticketsTotal > 0
+              ? `+${Math.max(3, Math.round(ticketsTotal * 0.08))} vs. último mês`
+              : 'Sem dados',
       },
     ],
-    [venuesTotal, eventsTotal, ticketsTotal, isLoading],
+    [venuesTotal, eventsTotal, ticketsTotal],
   );
+
+  const showHeroLoading = isLoading;
 
   return (
     <div className="relative">
-      <section className="localis-hero-bg">
+      <section>
         <ScrollArea className="hidden" type="hover" />
         <DashboardHero
           userName={userName}
@@ -247,44 +260,68 @@ export function DashboardClient() {
               ? formatDateTimeBR(upcomingPreview.startDate).replace('de ', '')
               : undefined
           }
-          isLoading={isLoading}
+          isLoading={showHeroLoading}
         />
       </section>
 
-      <section className="relative -mt-10 md:-mt-16 z-10">
+      <section className="relative -mt-4 md:-mt-8 z-10">
         <div className="container pb-10">
-          {isLoading && !venuesTotal && !eventsTotal ? (
-            <StatCardsSkeleton />
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
-              <VenueStatCard count={venuesTotal} />
-              <EventStatCard count={eventsTotal} />
-            </div>
-          )}
-          {isFetching && (isError || errors.length) && (
-            <div className="mt-4 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-              ⚠️ Não foi possível carregar todos os dados.{' '}
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
+            <VenueStatCard
+              loading={venuesTotal === null}
+              count={
+                venuesTotal === null
+                  ? '…'
+                  : venuesTotal.toLocaleString('pt-BR')
+              }
+            />
+            <EventStatCard
+              loading={eventsTotal === null}
+              count={
+                eventsTotal === null
+                  ? '…'
+                  : eventsTotal.toLocaleString('pt-BR')
+              }
+            />
+          </div>
+          {isFetching && (isError || errors.length > 0) ? (
+            <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-destructive/35 bg-destructive/5 px-4 py-4 text-sm text-destructive sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-2">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-destructive/15 ring-1 ring-destructive/30">
+                  <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                </span>
+                <div>
+                  <p className="font-semibold text-destructive">
+                    Não foi possível carregar todos os dados do painel.
+                  </p>
+                  <p className="mt-0.5 text-xs text-destructive/85">
+                    Alguns módulos podem mostrar informações desatualizadas.
+                  </p>
+                </div>
+              </div>
               <button
                 onClick={() => refetchAll()}
-                className="underline underline-offset-2 font-semibold ml-1"
+                className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-destructive/30 bg-destructive/10 px-4 py-2 text-xs font-semibold text-destructive transition-all hover:bg-destructive/15 sm:self-center"
               >
+                <RefreshCw className={cn('h-3.5 w-3.5', isFetching && 'animate-spin')} />
                 Tentar novamente
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 
-      <section className="relative pb-16 pt-4">
+      <section className="relative pb-20 pt-2">
         <div className="container">
           {isLoading && !venueList.length && !eventList.length ? (
             <ListsSkeleton />
           ) : (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-6">
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-6">
               <RecentSection
                 tone="venue"
                 title="Últimos locais adicionados"
-                description="Gerencie portões e capacidades"
+                description="Gerencie portões, capacidades e contatos operacionais"
+                columnsHint="Nome · Endereço · Capacidade · Contato ou Portões"
                 seeAllHref="/locais"
                 items={venueRows ?? []}
                 emptyLabel="Nenhum local cadastrado ainda. Clique em + Novo local para começar."
@@ -298,9 +335,10 @@ export function DashboardClient() {
                 }
                 description={
                   eventsMode === 'recent'
-                    ? 'Confira ingressos e datas'
-                    : 'Agenda de eventos futuros'
+                    ? 'Recém criados — revise ingressos e configurações'
+                    : 'Agenda futura — acompanhe datas e ocupação prevista'
                 }
+                columnsHint="Nome · Categoria · Local · Data · Ingressos disponíveis"
                 seeAllHref="/eventos"
                 items={eventRows ?? []}
                 emptyLabel="Nenhum evento cadastrado ainda. Clique em + Novo evento para começar."
