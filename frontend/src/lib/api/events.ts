@@ -90,6 +90,30 @@ export async function deleteEvent(id: string) {
   return apiFetch<void>(`/events/${id}`, { method: 'DELETE' });
 }
 
+export interface AvailabilityConflict {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface AvailabilityResponse {
+  available: boolean;
+  conflicts: AvailabilityConflict[];
+}
+
+export async function checkEventAvailability(params: {
+  venueId: string;
+  startDate: string;
+  endDate: string;
+  excludeEventId?: string;
+}) {
+  return apiFetch<AvailabilityResponse>('/events/availability/conflict', {
+    params,
+    skipAuth: true,
+  });
+}
+
 export interface ConflictErrorDetail {
   error: 'ScheduleConflict';
   message: string;
@@ -98,5 +122,7 @@ export interface ConflictErrorDetail {
     name: string;
     start: string;
     end: string;
+    startDate: string;
+    endDate: string;
   };
 }

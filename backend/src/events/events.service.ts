@@ -171,6 +171,37 @@ export class EventsService {
     return this.prisma.ticket.count();
   }
 
+  /**
+   * RN-04 (BE-BIZ-01): Valida conflito de agenda para um local sem salvar nada.
+   * Usado pelo frontend para validar antes do submit.
+   */
+  async checkAvailability(params: {
+    venueId: string;
+    startDate: string | Date;
+    endDate: string | Date;
+    excludeEventId?: string;
+  }) {
+    const start = params.startDate instanceof Date ? params.startDate : new Date(params.startDate);
+    const end = params.endDate instanceof Date ? params.endDate : new Date(params.endDate);
+    try {
+      await this.assertNoScheduleConflict({
+        venueId: params.venueId,
+        startDate: start,
+        endDate: end,
+        excludeEventId: params.excludeEventId,
+      });
+      return { available: true as const, conflicts: [] };
+    } catch (e) {
+      if (e instanceof ConflictException) {
+        const resp = e.getResponse() as { statusCode?: number; error?: string; conflict?: any };
+        if (resp?.conflict) {
+          return { available: false as const, conflicts: [resp.conflict] };
+        }
+      }
+      throw e;
+    }
+  }
+
   async create(dto: CreateEventDto, createdByIdFromToken?: string) {
     const startDate = new Date(dto.startDate);
     const endDate = new Date(dto.endDate);

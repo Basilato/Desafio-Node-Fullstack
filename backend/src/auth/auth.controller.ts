@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -9,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtAuthGuardOptional } from './guards/jwt-auth-optional.guard';
 import { CurrentUser, type JwtUserPayload } from './decorators/current-user.decorator';
@@ -17,6 +26,17 @@ import { CurrentUser, type JwtUserPayload } from './decorators/current-user.deco
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Criar nova conta (role padrão MANAGER)',
+  })
+  @ApiBody({ type: RegisterDto })
+  @ApiCreatedResponse({ description: 'Conta criada com sucesso' })
+  register(@Body() dto: RegisterDto) {
+    return this.auth.register(dto);
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)

@@ -11,8 +11,26 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
+  const defaultOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+  ];
+  const origins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean)
+    : defaultOrigins;
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? '*',
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (origins.includes(origin)) return callback(null, true);
+      if (process.env.CORS_ORIGIN === undefined) {
+        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+          return callback(null, true);
+        }
+      }
+      callback(null, false);
+    },
     credentials: true,
   });
 

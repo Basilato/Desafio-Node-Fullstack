@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   UseGuards,
   DefaultValuePipe,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,7 +25,9 @@ import {
 import { VenuesService } from './venues.service';
 import { CreateVenueDto } from './dto/create-venue.dto';
 import { UpdateVenueDto } from './dto/update-venue.dto';
-import { JwtAuthGuardOptional } from '@/auth/guards/jwt-auth-optional.guard';
+import { AssignAllowedTicketTypesDto } from '@/ticket-types/dto/update-ticket-type.dto';
+import { AssignGatesTicketTypesDto } from './dto/assign-gates.dto';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator';
 import type { JwtUserPayload } from '@/auth/auth.service';
 
@@ -67,30 +70,66 @@ export class VenuesController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuardOptional)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Local criado' })
-  @ApiOperation({ summary: 'Cadastrar novo local (autenticado opcional por enquanto)' })
+  @ApiOperation({ summary: 'Cadastrar novo local (autenticação obrigatória)' })
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateVenueDto, @CurrentUser() user?: JwtUserPayload) {
     return this.venuesService.create(dto, user?.sub);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuardOptional)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Atualizar local' })
+  @ApiOperation({ summary: 'Atualizar local (autenticação obrigatória)' })
   update(@Param('id') id: string, @Body() dto: UpdateVenueDto) {
     return this.venuesService.update(id, dto);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuardOptional)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiNoContentResponse({ description: 'Local excluído' })
-  @ApiOperation({ summary: 'Excluir local (não se tiver eventos vinculados)' })
+  @ApiOperation({ summary: 'Excluir local (autenticação obrigatória, não se tiver eventos vinculados)' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string) {
     await this.venuesService.remove(id);
+  }
+
+  @Put(':venueId/gates/:gateId/allowed-ticket-types')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'BE-BIZ-04 · Associar Tipos de Ingresso LIBERADOS a um Portão (catraca) específico de um Local',
+  })
+  assignGateTicketTypes(
+    @Param('venueId') venueId: string,
+    @Param('gateId') gateId: string,
+    @Body() dto: AssignAllowedTicketTypesDto,
+  ) {
+    return this.venuesService.assignGateAllowedTicketTypes({
+      venueId,
+      gateId,
+      ticketTypeIds: dto.ticketTypeIds ?? [],
+    });
+  }
+
+  @Post(':venueId/gates/allowed-ticket-types/bulk')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'BE-BIZ-04 · LOTE · Atualizar liberações de Tipos de Ingresso em MÚLTIPLOS Portões de um Local de uma vez',
+  })
+  assignBulkGateTicketTypes(
+    @Param('venueId') venueId: string,
+    @Body() dto: AssignGatesTicketTypesDto,
+  ) {
+    return this.venuesService.assignBulkGateAllowedTicketTypes({
+      venueId,
+      assignments: dto.assignments,
+    });
   }
 }

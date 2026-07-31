@@ -24,7 +24,7 @@ import {
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { JwtAuthGuardOptional } from '@/auth/guards/jwt-auth-optional.guard';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { CurrentUser, type JwtUserPayload } from '@/auth/decorators/current-user.decorator';
 
 @ApiTags('Events (Eventos)')
@@ -92,12 +92,29 @@ export class EventsController {
     return this.eventsService.findOne(id);
   }
 
+  @Get('availability/conflict')
+  @ApiOperation({
+    summary:
+      'BE-BIZ-01 · Verifica conflito de agenda em um venue sem salvar. Disponível para pré-validação do frontend.',
+  })
+  @ApiQuery({ name: 'venueId', required: true, example: 'seed-wct' })
+  @ApiQuery({ name: 'startDate', required: true, example: '2026-12-20T20:00:00Z' })
+  @ApiQuery({ name: 'endDate', required: true, example: '2026-12-20T23:00:00Z' })
+  async availability(
+    @Query('venueId') venueId: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('excludeEventId') excludeEventId?: string,
+  ) {
+    return this.eventsService.checkAvailability({ venueId, startDate, endDate, excludeEventId });
+  }
+
   @Post()
-  @UseGuards(JwtAuthGuardOptional)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ description: 'Evento criado (com validação de conflito de agenda)' })
   @ApiOperation({
-    summary: 'Criar novo evento (RN-02: 1 local obrigatório | RN-04: sem conflito de agenda)',
+    summary: 'Criar novo evento (RN-02: 1 local obrigatório | RN-04: sem conflito de agenda) — autenticação obrigatória',
   })
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateEventDto, @CurrentUser() user?: JwtUserPayload) {
@@ -105,18 +122,18 @@ export class EventsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuardOptional)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Atualizar evento (mantém validação de conflito)' })
+  @ApiOperation({ summary: 'Atualizar evento (mantém validação de conflito) — autenticação obrigatória' })
   update(@Param('id') id: string, @Body() dto: UpdateEventDto) {
     return this.eventsService.update(id, dto);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuardOptional)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiNoContentResponse({ description: 'Evento excluído' })
-  @ApiOperation({ summary: 'Excluir evento por ID' })
+  @ApiOperation({ summary: 'Excluir evento por ID — autenticação obrigatória' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string) {
     await this.eventsService.remove(id);

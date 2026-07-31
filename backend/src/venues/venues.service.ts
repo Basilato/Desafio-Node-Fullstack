@@ -177,4 +177,66 @@ export class VenuesService {
       );
     }
   }
+
+  /**
+   * BE-BIZ-04: Substitui os TicketTypes liberados para um portão (catraca) de um venue.
+   * Valida que o gate pertence ao venue e os ticketTypes existem.
+   */
+  async assignGateAllowedTicketTypes(params: {
+    venueId: string;
+    gateId: string;
+    ticketTypeIds: string[];
+  }) {
+    const { venueId, gateId, ticketTypeIds } = params;
+
+    const gate = await this.prisma.gate.findFirst({
+      where: { id: gateId, venueId },
+    });
+    if (!gate) {
+      throw new NotFoundException(`Portão não encontrado neste local`);
+    }
+
+    if (ticketTypeIds.length) {
+      const exist = await this.prisma.ticketType.count({
+        where: { id: { in: ticketTypeIds } },
+      });
+      if (exist !== ticketTypeIds.length) {
+        throw new BadRequestException('Ao menos um tipo de ingresso informado não existe');
+      }
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.allowedTicketType.deleteMany({ where: { gateId } });
+      if (ticketTypeIds.length) {
+        await tx.allowedTicketType.createMany({
+          data: ticketTypeIds.map((t) => ({ gateId, ticketTypeId: t })),
+          skipDuplicates: true,
+        });
+      }
+      return tx.allowedTicketType.findMany({
+        where: { gateId },
+        include: { ticketType: true },
+      });
+    });
+  }
+
+  /**
+   * Atualiza múltiplos gates de um venue em lote com seus tipos de ingresso liberados.
+   * Payload [{ gateId, ticketTypeIds: [...]}]
+   */
+  async assignBulkGateAllowedTicketTypes(params: {
+    venueId: string;
+    assignments: Array<{ gateId: string; ticketTypeIds: string[] }>;
+  }) {
+    const { venueId, assignments } = params;
+    return Promise.all(
+      assignments.map((a) =>
+        this.assignGateAllowedTicketTypes({
+          venueId,
+          gateId: a.gateId,
+          ticketTypeIds: a.ticketTypeIds,
+        }),
+      ),
+    );
+  }
 }

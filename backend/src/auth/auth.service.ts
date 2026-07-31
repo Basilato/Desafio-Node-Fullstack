@@ -1,9 +1,15 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '@/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import type { JwtUserPayload } from './decorators/current-user.decorator';
 
 export type { JwtUserPayload };
@@ -43,6 +49,53 @@ export class AuthService {
     const token = this.jwt.sign(payload, { expiresIn });
 
     this.logger.log(`Login bem-sucedido: ${user.email} (${user.role})`);
+    return {
+      accessToken: token,
+      tokenType: 'Bearer',
+      expiresIn,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        avatarUrl: user.avatarUrl,
+      },
+    };
+  }
+
+  async register({ name, email, password, role }: RegisterDto) {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existing = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    });
+    if (existing) {
+      throw new ConflictException('Este e-mail já está cadastrado');
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await this.prisma.user.create({
+      data: {
+        name: name.trim(),
+        email: normalizedEmail,
+        passwordHash,
+        role: role ?? 'MANAGER',
+      },
+    });
+
+    const payload: JwtUserPayload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+
+    const expiresIn = this.config.get<string>('JWT_EXPIRES_IN', '12h');
+    const token = this.jwt.sign(payload, { expiresIn });
+
+    this.logger.log(`Registro bem-sucedido: ${user.email} (${user.role})`);
     return {
       accessToken: token,
       tokenType: 'Bearer',

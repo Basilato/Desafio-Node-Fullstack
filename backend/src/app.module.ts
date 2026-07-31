@@ -5,6 +5,8 @@ import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { VenuesModule } from './venues/venues.module';
 import { EventsModule } from './events/events.module';
+import { TicketTypesModule } from './ticket-types/ticket-types.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     VenuesModule,
     EventsModule,
+    TicketTypesModule,
+    TicketsModule,
     HealthModule,
   ],
 })

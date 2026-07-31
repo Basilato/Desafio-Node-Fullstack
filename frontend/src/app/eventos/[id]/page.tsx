@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { useEvent, useDeleteEvent } from '@/hooks/use-event';
 import { UpdateEventForm } from '@/components/forms/create-event-form';
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog';
+import { EventCapacityCard } from '@/components/event-capacity-card';
+import { IssueTicketSheet } from '@/components/issue-ticket-sheet';
 import {
   Card,
   CardContent,
@@ -21,7 +23,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Progress } from '@/components/ui/progress';
 import {
   PartyPopper,
   Home as HomeIcon,
@@ -37,6 +38,7 @@ import {
   Building2,
   ArrowRight,
   AtSign,
+  Plus,
 } from 'lucide-react';
 import { CategoryBadge } from '@/components/category-badge';
 
@@ -77,6 +79,7 @@ export default function EventDetailPage() {
 
   const [editing, setEditing] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
+  const [issuing, setIssuing] = React.useState(false);
 
   React.useEffect(() => {
     const hash = window.location.hash;
@@ -111,11 +114,6 @@ export default function EventDetailPage() {
   } = useEvent(eventId);
 
   const deleteEvent = useDeleteEvent();
-
-  const capacity = event?.venue?.capacity ?? 0;
-  const ticketsSold = event?._count?.tickets ?? 0;
-  const progressPct = capacity > 0 ? Math.min(100, (ticketsSold / capacity) * 100) : 0;
-  const soldOut = capacity > 0 && ticketsSold >= capacity;
 
   return (
     <div className="container py-8 space-y-8">
@@ -189,7 +187,14 @@ export default function EventDetailPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 lg:shrink-0">
+              <div className="flex items-center gap-2 lg:shrink-0 flex-wrap">
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-localis-event to-rose-600 hover:from-localis-event hover:to-rose-500 text-white shadow-lg shadow-rose-900/20"
+                  onClick={() => setIssuing(true)}
+                >
+                  <Plus className="h-4 w-4 mr-1.5" /> Emitir ingresso
+                </Button>
                 <Button
                   size="sm"
                   variant="outline"
@@ -212,80 +217,11 @@ export default function EventDetailPage() {
 
           {/* Ocupação + criador */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="rounded-3xl border-white/5 lg:col-span-2 overflow-hidden">
-              <CardHeader className="pb-4 pt-5 border-b border-border/50">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
-                    <Ticket className="h-3.5 w-3.5" />
-                  </span>
-                  Capacidade e ocupação
-                </CardTitle>
-                <CardDescription>
-                  Acompanhe a venda de ingressos em relação à capacidade do local.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6 space-y-5">
-                <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="inline-flex items-center gap-2">
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-localis-event/10 text-localis-event ring-1 ring-localis-event/20">
-                        <Ticket className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          Ingressos emitidos
-                        </p>
-                        <p className="text-xl font-extrabold tracking-tight">
-                          {ticketsSold.toLocaleString('pt-BR')}{' '}
-                          <span className="text-base font-semibold text-muted-foreground">
-                            / {capacity.toLocaleString('pt-BR')}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className={
-                        'text-right ' +
-                        (soldOut
-                          ? 'text-rose-400'
-                          : progressPct >= 80
-                            ? 'text-amber-400'
-                            : 'text-localis-event')
-                      }
-                    >
-                      <p className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                        {soldOut ? 'Esgotado' : progressPct >= 80 ? 'Últimos' : 'Ocupação'}
-                      </p>
-                      <p className="text-2xl font-black font-mono tracking-tight">
-                        {progressPct.toFixed(0)}%
-                      </p>
-                    </div>
-                  </div>
-                  <Progress
-                    value={progressPct}
-                    className={
-                      'h-2.5 rounded-full bg-muted/50 [&>div]:transition-all [&>div]:duration-500 [&>div]:rounded-full ' +
-                      (soldOut
-                        ? '[&>div]:bg-gradient-to-r [&>div]:from-rose-500 [&>div]:to-rose-400'
-                        : progressPct >= 80
-                          ? '[&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-amber-400'
-                          : '[&>div]:bg-gradient-to-r [&>div]:from-localis-event [&>div]:to-rose-400')
-                    }
-                  />
-                  <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5">
-                      <Users className="h-3.5 w-3.5" />
-                      Capacidade do local
-                    </span>
-                    <span className="font-mono">
-                      {capacity > 0
-                        ? `${(capacity - ticketsSold).toLocaleString('pt-BR')} disponíveis`
-                        : 'Local sem capacidade definida'}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="lg:col-span-2">
+              {eventId ? (
+                <EventCapacityCard eventId={eventId} />
+              ) : null}
+            </div>
 
             {/* Criador */}
             <Card className="rounded-3xl border-white/5 overflow-hidden">
@@ -473,6 +409,15 @@ export default function EventDetailPage() {
           await deleteEvent.mutateAsync(event.id);
         }}
       />
+
+      {/* Emitir ingresso sheet */}
+      {eventId ? (
+        <IssueTicketSheet
+          open={issuing}
+          onOpenChange={setIssuing}
+          eventId={eventId}
+        />
+      ) : null}
     </div>
   );
 }

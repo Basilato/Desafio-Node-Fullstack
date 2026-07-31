@@ -1,15 +1,19 @@
 'use client';
 
+import * as React from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createEvent,
   deleteEvent,
   getEventById,
   updateEvent,
+  checkEventAvailability,
   type ConflictErrorDetail,
   type CreateEventPayload,
   type EventRecent,
   type UpdateEventPayload,
+  type AvailabilityConflict,
+  type AvailabilityResponse,
 } from '@/lib/api/events';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
@@ -222,4 +226,58 @@ export function useDeleteEvent() {
   });
 }
 
-export type { CreateEventPayload, UpdateEventPayload, EventRecent, ConflictErrorDetail };
+export function useEventAvailability(params: {
+  venueId: string | null | undefined;
+  startIso: string | null | undefined;
+  endIso: string | null | undefined;
+  excludeEventId?: string | null | undefined;
+  enabled?: boolean;
+  debounceMs?: number;
+}) {
+  const { venueId, startIso, endIso, excludeEventId, enabled = true, debounceMs = 450 } = params;
+
+  const vDeb = useDebouncedValue(venueId ?? null, debounceMs);
+  const sDeb = useDebouncedValue(startIso ?? null, debounceMs);
+  const eDeb = useDebouncedValue(endIso ?? null, debounceMs);
+
+  const valid = Boolean(vDeb && sDeb && eDeb);
+  const queryKey = ['events', 'availability', { venueId: vDeb, start: sDeb, end: eDeb, exclude: excludeEventId ?? null }] as const;
+
+  const q = useQuery<AvailabilityResponse>({
+    queryKey,
+    queryFn: () =>
+      checkEventAvailability({
+        venueId: vDeb!,
+        startDate: sDeb!,
+        endDate: eDeb!,
+        excludeEventId: excludeEventId ?? undefined,
+      }),
+    staleTime: 1000 * 15,
+    refetchOnWindowFocus: false,
+    enabled: enabled && valid,
+  });
+
+  const conflicts: AvailabilityConflict[] = q.data?.conflicts ?? [];
+  const firstConflict = conflicts[0] ?? null;
+  const available: boolean | null =
+    q.data !== undefined ? Boolean(q.data.available) : null;
+
+  return {
+    ...q,
+    conflicts,
+    firstConflict,
+    available,
+    isCheckable: valid,
+  };
+}
+
+function useDebouncedValue<T>(value: T, delay = 300): T {
+  const [debounced, setDebounced] = React.useState(value);
+  React.useEffect(() => {
+    const t = window.setTimeout(() => setDebounced(value), delay);
+    return () => window.clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
+export type { CreateEventPayload, UpdateEventPayload, EventRecent, ConflictErrorDetail, AvailabilityConflict, AvailabilityResponse };

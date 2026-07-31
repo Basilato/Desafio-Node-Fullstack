@@ -17,12 +17,15 @@ import {
   CalendarClock,
   CalendarDays,
   AlertTriangle,
+  CheckCircle2,
+  Loader2,
   MapPin,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CATEGORY_META, type EventCategoryKey } from '@/components/category-badge';
 import {
   useCreateEventMutation,
+  useEventAvailability,
   useUpdateEventMutation,
 } from '@/hooks/use-event';
 
@@ -99,7 +102,15 @@ export function CreateEventForm({
       : toLocalInput(addHours(now, 27)),
   );
   const [formError, setFormError] = React.useState<string | null>(null);
-  const [conflict, setConflict] = React.useState<ConflictErrorDetail | null>(null);
+
+  const startIso = React.useMemo(() => {
+    const d = new Date(startLocal);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }, [startLocal]);
+  const endIso = React.useMemo(() => {
+    const d = new Date(endLocal);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }, [endLocal]);
 
   const venuesQ = useQuery({
     queryKey: ['venues', 'select-choices'] as const,
@@ -108,19 +119,23 @@ export function CreateEventForm({
   });
   const venueOptions = venuesQ.data?.items ?? [];
 
+  const avail = useEventAvailability({
+    venueId,
+    startIso,
+    endIso,
+    excludeEventId: eventId,
+  });
+
   const createMutation = useCreateEventMutation();
   const updateMutation = useUpdateEventMutation();
   const activeMutation = resolvedMode === 'create' ? createMutation : updateMutation;
   const busy = activeMutation.isPending;
 
-  React.useEffect(() => {
-    setConflict(null);
-  }, [startLocal, endLocal, venueId]);
+  const submitDisabled = busy || avail.available === false;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
-    setConflict(null);
 
     const errs: string[] = [];
     if (!name.trim()) errs.push('Nome do evento é obrigatório.');
@@ -281,24 +296,7 @@ export function CreateEventForm({
 
         <Separator className="my-6" />
 
-        {conflict && (
-          <div className="rounded-2xl border border-rose-500/40 bg-gradient-to-br from-rose-500/15 via-rose-900/10 to-transparent p-4 mb-4 space-y-2">
-            <div className="flex items-center gap-2 text-rose-300 font-bold">
-              <AlertTriangle className="h-4.5 w-4.5" /> Conflito de agenda detectado
-            </div>
-            <p className="text-sm text-rose-200/90">
-              O evento conflita com{' '}
-              <strong className="text-rose-100 underline decoration-rose-500/60 underline-offset-2">
-                {conflict.conflict.name}
-              </strong>{' '}
-              no local selecionado. Ajuste as datas ou escolha outro local.
-            </p>
-            <div className="text-xs text-rose-200/70">
-              Horário conflitante: {formatBRDateTime(conflict.conflict.start)} →{' '}
-              {formatBRDateTime(conflict.conflict.end)}
-            </div>
-          </div>
-        )}
+        <AvailabilityBanner avail={avail} />
 
         {formError && (
           <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300 mb-4">
@@ -328,10 +326,16 @@ export function CreateEventForm({
         </Button>
         <Button
           type="submit"
-          disabled={busy}
+          disabled={submitDisabled}
           className="bg-gradient-to-r from-localis-event to-rose-500 hover:from-localis-event hover:to-rose-400 text-white shadow-lg shadow-rose-900/30 min-w-[160px]"
         >
-          {busy ? 'Salvando…' : isUpdate ? 'Salvar alterações' : 'Criar evento'}
+          {busy
+            ? 'Salvando…'
+            : avail.available === false
+              ? 'Horário conflitante'
+              : isUpdate
+                ? 'Salvar alterações'
+                : 'Criar evento'}
         </Button>
       </div>
     </form>
@@ -342,6 +346,78 @@ export function UpdateEventForm(props: Omit<CreateEventFormProps, 'mode' | 'init
   initialData: EventRecent;
 }) {
   return <CreateEventForm {...props} mode="update" initialData={props.initialData} />;
+}
+
+type AvailHook = ReturnType<typeof useEventAvailability>;
+
+function AvailabilityBanner({ avail }: { avail: AvailHook }) {
+  if (avail.error) {
+    return (
+      <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-amber-900/10 to-transparent p-4 mb-4 space-y-2">
+        <div className="flex items-center gap-2 text-amber-300 font-bold">
+          <AlertTriangle className="h-4.5 w-4.5" /> Não foi possível validar disponibilidade
+        </div>
+        <p className="text-sm text-amber-200/90">
+          Verifique a conexão com a API. O submit será bloqueado por segurança.
+        </p>
+      </div>
+    );
+  }
+  if (!avail.isCheckable) {
+    return (
+      <div className="rounded-2xl border border-slate-500/30 bg-slate-500/5 p-4 mb-4 space-y-2">
+        <div className="flex items-center gap-2 text-slate-300 font-medium text-sm">
+          <CalendarDays className="h-4 w-4" /> Preencha local, início e término para validar a agenda.
+        </div>
+      </div>
+    );
+  }
+  if (avail.isFetching || avail.available === null) {
+    return (
+      <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 mb-4 space-y-2">
+        <div className="flex items-center gap-2 text-sky-300 font-bold text-sm">
+          <Loader2 className="h-4 w-4 animate-spin" /> Verificando conflitos na agenda…
+        </div>
+      </div>
+    );
+  }
+  if (avail.available === false && avail.firstConflict) {
+    const c = avail.firstConflict;
+    const cStart = c.startDate ?? (c as unknown as { start?: string }).start;
+    const cEnd = c.endDate ?? (c as unknown as { end?: string }).end;
+    return (
+      <div className="rounded-2xl border border-rose-500/40 bg-gradient-to-br from-rose-500/15 via-rose-900/10 to-transparent p-4 mb-4 space-y-2">
+        <div className="flex items-center gap-2 text-rose-300 font-bold">
+          <AlertTriangle className="h-4.5 w-4.5" /> Horário conflitante na agenda
+        </div>
+        <p className="text-sm text-rose-200/90">
+          Já existe{' '}
+          <strong className="text-rose-100 underline decoration-rose-500/60 underline-offset-2">
+            {c.name}
+          </strong>{' '}
+          no mesmo local neste horário. Ajuste as datas ou escolha outro local para poder criar.
+        </p>
+        <div className="text-xs text-rose-200/70">
+          Horário do conflito: {formatBRDateTime(cStart)} → {formatBRDateTime(cEnd)}
+        </div>
+      </div>
+    );
+  }
+  if (avail.available === true) {
+    return (
+      <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-500/15 via-emerald-900/10 to-transparent p-4 mb-4 space-y-1">
+        <div className="flex items-center gap-2 text-emerald-300 font-bold">
+          <CheckCircle2 className="h-4.5 w-4.5" /> Agenda disponível para o local selecionado
+        </div>
+        {avail.conflicts.length === 0 && (
+          <p className="text-xs text-emerald-200/80">
+            Nenhum outro evento foi marcado no intervalo que você escolheu.
+          </p>
+        )}
+      </div>
+    );
+  }
+  return null;
 }
 
 function Field({

@@ -4,6 +4,11 @@ const RAW_BASE =
     : undefined) ?? 'http://localhost:3001';
 const API_BASE = `${RAW_BASE.replace(/\/$/, '')}/api`;
 
+export const TOKEN_STORAGE_KEY = 'localis_token';
+export const USER_STORAGE_KEY = 'localis_user';
+export const UNAUTHORIZED_EVENT = 'localis:unauthorized';
+export const SESSION_COOKIE = 'localis_session_present';
+
 function buildUrl(path: string, params?: Record<string, unknown>) {
   const url = new URL(
     path.startsWith('/') ? `${API_BASE}${path}` : `${API_BASE}/${path}`,
@@ -50,6 +55,46 @@ type FetchOptions = Omit<RequestInit, 'body'> & {
   skipAuth?: boolean;
 };
 
+export function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredToken(token: string | null) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token === null) {
+      window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearSessionCookie() {
+  if (typeof document === 'undefined') return;
+  try {
+    document.cookie = `${SESSION_COOKIE}=0; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=lax`;
+  } catch {
+    /* ignore */
+  }
+}
+
+function emitUnauthorized() {
+  if (typeof window === 'undefined') return;
+  try {
+    window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
+  } catch {
+    /* ignore */
+  }
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   init: FetchOptions = {},
@@ -73,19 +118,29 @@ export async function apiFetch<T = unknown>(
     }
   }
 
-  if (!skipAuth && typeof window !== 'undefined') {
-    const token = localStorage.getItem('localis_token');
+  if (!skipAuth) {
+    const token = getStoredToken();
     if (token) finalHeaders['Authorization'] = `Bearer ${token}`;
   }
 
   const fetchInit: RequestInit = {
     headers: finalHeaders,
-    credentials: 'include',
     body: finalBody,
     ...(rest as RequestInit),
   };
 
   const res = await fetch(buildUrl(path, params), fetchInit);
+
+  if (res.status === 401 && !skipAuth) {
+    setStoredToken(null);
+    try {
+      window.localStorage.removeItem(USER_STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    clearSessionCookie();
+    emitUnauthorized();
+  }
 
   if (!res.ok) {
     let payload: ApiErrorPayload | null = null;
@@ -109,3 +164,5 @@ export async function apiFetch<T = unknown>(
     return text as unknown as T;
   }
 }
+
+
