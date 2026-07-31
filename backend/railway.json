@@ -2,8 +2,8 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "apt-get update -y && apt-get install -y ca-certificates openssl && update-ca-certificates && npm install && npm run build",
-    "nixpacksConfigPath": "./nixpacks.toml"
+    "buildCommand": "npm install && npm run build",
+    "nixpacksConfigPath": ""
   },
   "deploy": {
     "healthcheckPath": "/api/health",
