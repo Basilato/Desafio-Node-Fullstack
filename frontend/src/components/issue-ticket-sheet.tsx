@@ -26,11 +26,17 @@ import {
   ArrowRight,
   AlertTriangle,
   Ban,
+  DoorOpen,
+  Search,
+  Crown,
 } from 'lucide-react';
 import { useTicketTypesList } from '@/hooks/use-ticket-types';
 import { useCreateTicketMutation, useEventCapacity } from '@/hooks/use-tickets';
+import { useGatesByVenue } from '@/hooks/use-gates';
+import { useEvent } from '@/hooks/use-event';
 import { TICKET_CATEGORY_LABELS } from '@/lib/api/ticket-types';
 import { cn } from '@/lib/utils';
+import type { GateSummary } from '@/lib/api/gates';
 
 const issueSchema = z.object({
   ticketTypeId: z.string().min(1, 'Selecione um tipo de ingresso'),
@@ -59,6 +65,12 @@ const issueSchema = z.object({
     .max(10)
     .optional()
     .or(z.literal('')),
+  gateId: z
+    .string()
+    .max(80)
+    .optional()
+    .or(z.literal(''))
+    .transform((v) => (v === '' ? undefined : v)),
 });
 
 export type IssueTicketForm = z.infer<typeof issueSchema>;
@@ -88,9 +100,15 @@ export function IssueTicketSheet({
   onOpenChange: (v: boolean) => void;
   eventId: string;
 }) {
+  const eventQ = useEvent(open ? eventId : null);
   const ticketTypes = useTicketTypesList(open);
   const capacityQ = useEventCapacity(open ? eventId : undefined);
   const emitMutation = useCreateTicketMutation();
+  const venueId = eventQ.data?.venue?.id;
+  const gatesQ = useGatesByVenue(open && venueId ? venueId : null, {
+    enabled: open && !!venueId,
+  });
+  const [gateSearch, setGateSearch] = React.useState('');
 
   const form = useForm<IssueTicketForm>({
     resolver: zodResolver(issueSchema),
@@ -101,6 +119,7 @@ export function IssueTicketSheet({
       holderDoc: '',
       seat: '',
       pricePaid: '',
+      gateId: '',
     },
     mode: 'onTouched',
   });
@@ -114,17 +133,55 @@ export function IssueTicketSheet({
         holderDoc: '',
         seat: '',
         pricePaid: '',
+        gateId: '',
       });
+      setGateSearch('');
     }
   }, [open, form]);
 
   const selectedTypeId = form.watch('ticketTypeId');
+  const selectedGateId = form.watch('gateId');
   const selectedType = React.useMemo(
     () =>
       (ticketTypes.data?.items ?? []).find((t) => t.id === selectedTypeId) ??
       null,
     [ticketTypes.data, selectedTypeId],
   );
+
+  React.useEffect(() => {
+    setGateSearch('');
+  }, [selectedTypeId]);
+
+  const allowedGatesForType = React.useMemo<GateSummary[]>(() => {
+    const all = gatesQ.data?.items ?? [];
+    if (!selectedTypeId) return all;
+    return all.filter((g) =>
+      (g.ticketTypes ?? []).some((a) => a.ticketType.id === selectedTypeId),
+    );
+  }, [gatesQ.data, selectedTypeId]);
+
+  const filteredGates = React.useMemo(() => {
+    if (!gateSearch.trim()) return allowedGatesForType;
+    const q = gateSearch.trim().toLowerCase();
+    return allowedGatesForType.filter(
+      (g) =>
+        g.name.toLowerCase().includes(q) ||
+        g.identifier.toLowerCase().includes(q) ||
+        (g.description ?? '').toLowerCase().includes(q),
+    );
+  }, [allowedGatesForType, gateSearch]);
+
+  const selectedGate = React.useMemo(
+    () => allowedGatesForType.find((g) => g.id === selectedGateId) ?? null,
+    [allowedGatesForType, selectedGateId],
+  );
+
+  function isGateVip(g: GateSummary): boolean {
+    return (g.ticketTypes ?? []).some((a) => {
+      const cat = (a.ticketType.category ?? '').toUpperCase();
+      return cat === 'VIP' || cat === 'CORTESIA';
+    });
+  }
 
   const pricePaidRaw = form.watch('pricePaid');
   const resolvedPriceNumber = React.useMemo(() => {
@@ -151,6 +208,7 @@ export function IssueTicketSheet({
       holderDoc: vals.holderDoc,
       seat: vals.seat,
       pricePaid: resolvedPriceNumber,
+      gateId: vals.gateId,
     });
     onOpenChange(false);
   }
@@ -410,11 +468,217 @@ export function IssueTicketSheet({
               </div>
             </div>
 
+            <Separator />
+
+            {/* Portão de entrada */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="gate_search" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <DoorOpen className="h-3.5 w-3.5" />
+                  Portão de entrada
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-normal normal-case">
+                    · opcional · filtrado por tipo
+                  </span>
+                </Label>
+                {selectedGate && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      form.setValue('gateId', '', {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                    }}
+                    className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-localis-event font-semibold"
+                  >
+                    Limpar
+                  </button>
+                )}
+              </div>
+
+              {gatesQ.isLoading ? (
+                <div className="rounded-xl border border-border/50 h-20 animate-pulse bg-muted/20" />
+              ) : (gatesQ.data?.items?.length ?? 0) === 0 ? (
+                <div className="rounded-xl border border-dashed border-border/60 bg-muted/15 p-4 text-center">
+                  <DoorOpen className="h-6 w-6 text-muted-foreground mx-auto mb-1.5 opacity-70" />
+                  <p className="text-xs font-semibold tracking-tight mb-0.5">
+                    Nenhum portão cadastrado neste local
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Os portões são gerenciados na página do local.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {!selectedTypeId && (
+                    <p className="text-[11px] text-muted-foreground">
+                      ⚠️ Selecione primeiro um tipo de ingresso para ver os portões onde ele está liberado.
+                    </p>
+                  )}
+                  {allowedGatesForType.length === 0 && selectedTypeId ? (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+                      <p className="text-xs font-bold text-amber-300 mb-0.5">
+                        Tipo ainda não liberado em nenhum portão
+                      </p>
+                      <p className="text-[11px] text-amber-200/80">
+                        Você pode emitir sem portão, ou liberar este tipo em algum portão na página do local / evento.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {allowedGatesForType.length > 5 && (
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input
+                            id="gate_search"
+                            autoComplete="off"
+                            placeholder="Buscar por nome ou identificador"
+                            value={gateSearch}
+                            onChange={(e) => setGateSearch(e.target.value)}
+                            className="pl-8 text-sm"
+                          />
+                        </div>
+                      )}
+                      <div
+                        className={cn(
+                          'grid gap-2',
+                          allowedGatesForType.length > 2 ? 'grid-cols-2' : 'grid-cols-1',
+                        )}
+                      >
+                        {filteredGates.length === 0 ? (
+                          <div className="rounded-xl border border-border/50 bg-muted/15 p-3 text-center">
+                            <p className="text-xs font-semibold">
+                              Nenhum portão encontrado para a busca
+                            </p>
+                          </div>
+                        ) : (
+                          filteredGates.map((g) => {
+                            const isActive = selectedGate?.id === g.id;
+                            const vip = isGateVip(g);
+                            return (
+                              <button
+                                key={g.id}
+                                type="button"
+                                onClick={() => {
+                                  form.setValue('gateId', isActive ? '' : g.id, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                  });
+                                }}
+                                className={cn(
+                                  'group relative rounded-xl border p-3 text-left flex items-start gap-3 transition-all',
+                                  isActive
+                                    ? vip
+                                      ? 'border-amber-400/60 ring-2 ring-amber-400/30 bg-amber-400/5 shadow-lg shadow-amber-900/20'
+                                      : 'border-localis-event ring-2 ring-localis-event/30 bg-localis-event/5 shadow-lg shadow-rose-900/10'
+                                    : vip
+                                      ? 'border-amber-400/30 hover:border-amber-400/50 bg-amber-400/[0.03] hover:bg-amber-400/[0.06]'
+                                      : 'border-border/60 hover:border-white/15 hover:bg-muted/30',
+                                )}
+                              >
+                                {vip && (
+                                  <div className="absolute -top-2 -left-2 h-6 w-6 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 ring-2 ring-background grid place-items-center shadow-md shadow-amber-900/30">
+                                    <Crown className="h-3 w-3 text-amber-950" strokeWidth={2.5} />
+                                  </div>
+                                )}
+                                <div
+                                  className={cn(
+                                    'h-9 w-9 shrink-0 rounded-lg grid place-items-center',
+                                    isActive
+                                      ? vip
+                                        ? 'bg-amber-400/20'
+                                        : 'bg-localis-event/20'
+                                      : 'bg-muted/40',
+                                  )}
+                                >
+                                  <DoorOpen
+                                    className={cn(
+                                      'h-4 w-4',
+                                      isActive
+                                        ? vip
+                                          ? 'text-amber-300'
+                                          : 'text-localis-event'
+                                        : 'text-muted-foreground',
+                                    )}
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <p className="font-bold text-sm tracking-tight line-clamp-1">
+                                      {g.name}
+                                    </p>
+                                    {vip && (
+                                      <span className="inline-flex h-4 px-1.5 items-center rounded-md border border-amber-400/30 bg-amber-400/10 text-[9px] font-mono uppercase text-amber-300">
+                                        <Crown className="h-2.5 w-2.5 mr-0.5" />
+                                        Premium
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
+                                    {g.identifier}
+                                  </p>
+                                  {g.description && (
+                                    <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">
+                                      {g.description}
+                                    </p>
+                                  )}
+                                  {(g.ticketTypes?.length ?? 0) > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-1.5">
+                                      {(g.ticketTypes ?? []).slice(0, 3).map((a) => (
+                                        <span
+                                          key={a.ticketType.id}
+                                          className="inline-flex h-4 px-1.5 items-center rounded-md border border-border/70 bg-muted/30 text-[9px] font-mono uppercase"
+                                        >
+                                          {a.ticketType.name}
+                                        </span>
+                                      ))}
+                                      {(g.ticketTypes?.length ?? 0) > 3 && (
+                                        <span className="inline-flex h-4 px-1.5 items-center rounded-md border border-border/70 bg-muted/30 text-[9px] font-mono uppercase">
+                                          +{(g.ticketTypes?.length ?? 0) - 3}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                {isActive && (
+                                  <CheckCircle2
+                                    className={cn(
+                                      'absolute bottom-3 right-3 h-4 w-4',
+                                      vip ? 'text-amber-300' : 'text-localis-event',
+                                    )}
+                                  />
+                                )}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+
             {/* Resumo */}
-            <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-localis-event/10 via-transparent to-transparent p-4 space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Resumo
-              </p>
+            <div
+              className={cn(
+                'rounded-2xl border p-4 space-y-3',
+                selectedGate && isGateVip(selectedGate)
+                  ? 'border-amber-400/40 bg-gradient-to-br from-amber-400/10 via-localis-event/5 to-transparent shadow-md shadow-amber-900/10'
+                  : 'border-border/60 bg-gradient-to-br from-localis-event/10 via-transparent to-transparent',
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Resumo
+                </p>
+                {selectedGate && isGateVip(selectedGate) && (
+                  <span className="inline-flex h-5 px-2 items-center gap-1 rounded-full border border-amber-400/30 bg-gradient-to-r from-amber-400/15 to-amber-300/10 text-[10px] font-mono uppercase text-amber-300 ring-1 ring-amber-400/10">
+                    <Crown className="h-3 w-3" />
+                    Acesso Premium
+                  </span>
+                )}
+              </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-bold tracking-tight">
@@ -423,12 +687,38 @@ export function IssueTicketSheet({
                   <p className="text-xs text-muted-foreground">
                     {form.watch('holderName') || 'Nome do titular'}
                   </p>
+                  {selectedGate && (
+                    <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                      <DoorOpen
+                        className={cn(
+                          'h-3 w-3',
+                          isGateVip(selectedGate) ? 'text-amber-300' : '',
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          'font-mono uppercase',
+                          isGateVip(selectedGate) ? 'text-amber-200' : '',
+                        )}
+                      >
+                        {selectedGate.identifier}
+                      </span>{' '}
+                      · {selectedGate.name}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                     Subtotal
                   </p>
-                  <p className="text-xl font-black tracking-tight text-localis-event">
+                  <p
+                    className={cn(
+                      'text-xl font-black tracking-tight',
+                      selectedGate && isGateVip(selectedGate)
+                        ? 'text-amber-300'
+                        : 'text-localis-event',
+                    )}
+                  >
                     {currencyBRL(resolvedPriceNumber)}
                   </p>
                 </div>

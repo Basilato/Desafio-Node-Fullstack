@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { TicketStatus, UpdateTicketDto } from './dto/update-ticket.dto';
+import { ListTicketsByEventDto } from './dto/list-tickets.dto';
 import { randomUUID } from 'node:crypto';
 
 @Injectable()
@@ -55,7 +56,7 @@ export class TicketsService {
     };
   }
 
-  /** BE-APP-05 + BE-BIZ-02: Emitir um ingresso respeitando capacidade */
+  /** BE-APP-05 + BE-BIZ-02 + BE-BIZ-04: Emitir um ingresso respeitando capacidade e validação de gate liberado */
   async create(dto: CreateTicketDto) {
     return this.prisma.$transaction(async (tx) => {
       const [event, ticketType] = await Promise.all([
@@ -68,6 +69,24 @@ export class TicketsService {
 
       const pricePaid = (dto.pricePaid ?? Number(ticketType.price)) as unknown as number;
       if (pricePaid < 0) throw new BadRequestException('Preço pago inválido');
+
+      if (dto.gateId) {
+        const gate = await tx.gate.findUnique({ where: { id: dto.gateId } });
+        if (!gate) throw new NotFoundException('Portão não encontrado');
+        if (gate.venueId !== event.venueId) {
+          throw new BadRequestException('Este portão não pertence ao mesmo local do evento.');
+        }
+        const allowed = await tx.allowedTicketType.findUnique({
+          where: {
+            gateId_ticketTypeId: { gateId: dto.gateId, ticketTypeId: dto.ticketTypeId },
+          },
+        });
+        if (!allowed) {
+          throw new BadRequestException(
+            `Este tipo de ingresso (${ticketType.name}) não está liberado para o portão ${gate.name} (${gate.identifier}).`,
+          );
+        }
+      }
 
       const emitted = await tx.ticket.count({
         where: {
@@ -86,6 +105,7 @@ export class TicketsService {
         data: {
           eventId: dto.eventId,
           ticketTypeId: dto.ticketTypeId,
+          gateId: dto.gateId ?? undefined,
           holderName: dto.holderName,
           holderEmail: dto.holderEmail ?? undefined,
           holderDoc: dto.holderDoc ?? undefined,
@@ -94,20 +114,47 @@ export class TicketsService {
           status: TicketStatus.ACTIVE,
           qrCode: randomUUID(),
         },
-        include: { ticketType: true, event: { include: { venue: true } } },
+        include: {
+          ticketType: true,
+          gate: true,
+          event: { include: { venue: true } },
+        },
       });
     });
   }
 
-  async findByEvent(eventId: string) {
+  async findByEvent(eventId: string, filters: ListTicketsByEventDto = {}) {
+    const where: any = { eventId };
+    if (filters.gateId) where.gateId = filters.gateId;
+
+    const usedNorm = typeof filters.used === 'string'
+      ? filters.used === 'true' || filters.used === '1'
+        ? true
+        : filters.used === 'false' || filters.used === '0'
+          ? false
+          : undefined
+      : filters.used;
+
+    const statusNorm = typeof filters.status === 'string' && filters.status.trim()
+      ? (filters.status.trim().toUpperCase() as TicketStatus)
+      : filters.status;
+
+    if (statusNorm) where.status = statusNorm;
+    if (usedNorm === true) where.status = TicketStatus.USED;
+    else if (usedNorm === false) {
+      if (!where.status) {
+        where.status = { notIn: [TicketStatus.USED] };
+      }
+    }
+
     const [items, total] = await Promise.all([
       this.prisma.ticket.findMany({
-        where: { eventId },
-        include: { ticketType: true },
+        where,
+        include: { ticketType: true, gate: true },
         orderBy: { createdAt: 'desc' },
         take: 500,
       }),
-      this.prisma.ticket.count({ where: { eventId } }),
+      this.prisma.ticket.count({ where }),
     ]);
     return { items, total };
   }
@@ -117,6 +164,7 @@ export class TicketsService {
       where: { id },
       include: {
         ticketType: true,
+        gate: true,
         event: {
           include: {
             venue: true,

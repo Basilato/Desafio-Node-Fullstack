@@ -24,6 +24,7 @@ import {
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { ListTicketsByEventDto } from './dto/list-tickets.dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('Tickets (Ingressos)')
@@ -47,9 +48,12 @@ export class TicketsController {
   }
 
   @Get('event/:eventId')
-  @ApiOperation({ summary: 'Listar ingressos de um evento' })
-  findByEvent(@Param('eventId') eventId: string) {
-    return this.service.findByEvent(eventId);
+  @ApiOperation({ summary: 'Listar ingressos de um evento (com filtros opcionais)' })
+  findByEvent(
+    @Param('eventId') eventId: string,
+    @Query() filters: ListTicketsByEventDto,
+  ) {
+    return this.service.findByEvent(eventId, filters);
   }
 
   @Get('event/:eventId/breakdown')

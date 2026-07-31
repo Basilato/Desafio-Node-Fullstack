@@ -14,6 +14,9 @@ import {
   IndianRupee,
   Search,
   X as XIcon,
+  Crown,
+  Calendar,
+  QrCode,
 } from 'lucide-react';
 import {
   Tabs,
@@ -42,6 +45,14 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog';
 import {
   useCreateTicketTypeMutation,
@@ -61,6 +72,12 @@ import {
   useGatesByVenue,
   useUpdateGateMutation,
 } from '@/hooks/use-gates';
+import { useTicketsByEvent } from '@/hooks/use-tickets';
+import {
+  TICKET_STATUS_LABELS,
+  type TicketItem,
+  type TicketStatus,
+} from '@/lib/api/tickets';
 import type { GateSummary } from '@/lib/api/gates';
 import { cn } from '@/lib/utils';
 
@@ -103,6 +120,38 @@ function currencyBRL(v: number): string {
   }
 }
 
+function formatShortDT(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(iso));
+  } catch {
+    return iso;
+  }
+}
+
+function statusVariant(s: TicketStatus):
+  | 'default'
+  | 'secondary'
+  | 'outline'
+  | 'destructive' {
+  switch (s) {
+    case 'ACTIVE':
+      return 'default';
+    case 'USED':
+      return 'secondary';
+    case 'CANCELLED':
+      return 'destructive';
+    case 'REFUNDED':
+      return 'outline';
+    default:
+      return 'outline';
+  }
+}
+
 function categoryBadgeVariant(c: TicketCategoryKey):
   | 'default'
   | 'secondary'
@@ -119,7 +168,13 @@ function categoryBadgeVariant(c: TicketCategoryKey):
   }
 }
 
-export function EventTicketGateTabs({ venueId }: { venueId?: string | null }) {
+export function EventTicketGateTabs({
+  venueId,
+  eventId,
+}: {
+  venueId?: string | null;
+  eventId?: string | null;
+}) {
   const ticketTypes = useTicketTypesList();
   const gates = useGatesByVenue(venueId);
   const deleteTtMutation = useDeleteTicketTypeMutation();
@@ -127,6 +182,30 @@ export function EventTicketGateTabs({ venueId }: { venueId?: string | null }) {
 
   const [ttSearch, setTtSearch] = React.useState('');
   const [gateSearch, setGateSearch] = React.useState('');
+  const [ticketSearch, setTicketSearch] = React.useState('');
+  const [ticketFilterGateId, setTicketFilterGateId] = React.useState<
+    string | null
+  >(null);
+
+  const ticketsQ = useTicketsByEvent(
+    eventId,
+    ticketFilterGateId ? { gateId: ticketFilterGateId } : null,
+  );
+
+  const filteredTickets = React.useMemo<TicketItem[]>(() => {
+    const items = ticketsQ.data?.items ?? [];
+    if (!ticketSearch.trim()) return items;
+    const q = ticketSearch.toLowerCase();
+    return items.filter(
+      (t) =>
+        t.holderName.toLowerCase().includes(q) ||
+        (t.holderEmail ?? '').toLowerCase().includes(q) ||
+        (t.holderDoc ?? '').toLowerCase().includes(q) ||
+        (t.seat ?? '').toLowerCase().includes(q) ||
+        t.id.toLowerCase().includes(q) ||
+        (t.ticketType?.name ?? '').toLowerCase().includes(q),
+    );
+  }, [ticketsQ.data, ticketSearch]);
 
   const [ttDialogMode, setTtDialogMode] = React.useState<
     { mode: 'closed' } | { mode: 'create' } | { mode: 'edit'; item: TicketTypeSummary }
@@ -178,7 +257,12 @@ export function EventTicketGateTabs({ venueId }: { venueId?: string | null }) {
       <CardContent className="p-0">
         <Tabs defaultValue="ticket-types" className="w-full">
           <div className="px-5 sm:px-6 pt-4 border-b border-border/40">
-            <TabsList className="mb-4 grid w-full grid-cols-2 h-10 p-1 bg-muted/30 border border-white/5">
+            <TabsList
+              className={cn(
+                'mb-4 grid w-full h-10 p-1 bg-muted/30 border border-white/5 gap-1',
+                eventId ? 'grid-cols-3' : 'grid-cols-2',
+              )}
+            >
               <TabsTrigger
                 value="ticket-types"
                 className="text-xs sm:text-sm data-[state=active]:bg-rose-500/15 data-[state=active]:text-rose-300 data-[state=active]:ring-1 data-[state=active]:ring-rose-500/30"
@@ -191,6 +275,22 @@ export function EventTicketGateTabs({ venueId }: { venueId?: string | null }) {
               >
                 <DoorOpen className="h-3.5 w-3.5 mr-1.5" /> Portões do local
               </TabsTrigger>
+              {eventId && (
+                <TabsTrigger
+                  value="tickets"
+                  className="text-xs sm:text-sm data-[state=active]:bg-localis-event/15 data-[state=active]:text-rose-200 data-[state=active]:ring-1 data-[state=active]:ring-localis-event/30"
+                >
+                  <QrCode className="h-3.5 w-3.5 mr-1.5" /> Ingressos emitidos
+                  {ticketsQ.data?.total ? (
+                    <Badge
+                      variant="outline"
+                      className="ml-1.5 text-[9px] font-mono uppercase h-4 px-1.5 bg-background/40 border-white/10"
+                    >
+                      {ticketsQ.data.total}
+                    </Badge>
+                  ) : null}
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 
@@ -317,6 +417,223 @@ export function EventTicketGateTabs({ venueId }: { venueId?: string | null }) {
               </div>
             )}
           </TabsContent>
+
+          {eventId && (
+            <TabsContent value="tickets" className="m-0 p-5 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      value={ticketSearch}
+                      onChange={(e) => setTicketSearch(e.target.value)}
+                      placeholder="Buscar por titular, documento, assento, ID…"
+                      className="pl-9"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={ticketFilterGateId ?? ''}
+                      onChange={(e) =>
+                        setTicketFilterGateId(e.target.value || null)
+                      }
+                      className="h-9 px-3 rounded-lg border border-border/60 bg-muted/20 text-sm focus:outline-none focus:ring-2 focus:ring-localis-event/40 focus:border-white/20"
+                    >
+                      <option value="">Todos os portões</option>
+                      {(gates.data?.items ?? []).map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.identifier} · {g.name}
+                        </option>
+                      ))}
+                    </select>
+                    {ticketFilterGateId && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setTicketFilterGateId(null)}
+                        className="h-9 px-3 text-muted-foreground hover:text-foreground"
+                      >
+                        <XIcon className="h-3.5 w-3.5 mr-1" /> Limpar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="text-[11px] font-mono uppercase tracking-wider shrink-0"
+                >
+                  {filteredTickets.length} de {ticketsQ.data?.total ?? 0}
+                </Badge>
+              </div>
+
+              {ticketsQ.isLoading ? (
+                <TicketsTableSkeleton />
+              ) : !eventId ? null : ticketsQ.isError && !ticketsQ.data ? (
+                <EmptyCard
+                  icon={<Ticket className="h-5 w-5 text-muted-foreground" />}
+                  title="Erro ao carregar ingressos"
+                  description="Verifique a conexão com o backend."
+                />
+              ) : filteredTickets.length === 0 ? (
+                <EmptyCard
+                  icon={<Ticket className="h-5 w-5 text-muted-foreground" />}
+                  title={
+                    ticketSearch || ticketFilterGateId
+                      ? 'Nenhum ingresso corresponde aos filtros'
+                      : 'Nenhum ingresso emitido ainda'
+                  }
+                  description={
+                    ticketSearch || ticketFilterGateId
+                      ? 'Tente outros termos ou limpe os filtros.'
+                      : 'Emitir o primeiro ingresso clicando em "Emitir ingresso" no topo da página.'
+                  }
+                />
+              ) : (
+                <div className="rounded-2xl border border-border/60 overflow-hidden bg-muted/10">
+                  <Table>
+                    <TableHeader className="bg-muted/30">
+                      <TableRow className="border-border/50 hover:bg-transparent">
+                        <TableHead className="w-16 font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          QR
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          Titular
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          Tipo
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          Portão
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          Assento
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          Valor
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground">
+                          Emissão
+                        </TableHead>
+                        <TableHead className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground text-right">
+                          Status
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredTickets.map((t) => (
+                        <TableRow
+                          key={t.id}
+                          className="border-border/40 hover:bg-muted/20 transition-colors"
+                        >
+                          <TableCell className="py-3">
+                            <div
+                              className="h-9 w-9 rounded-lg border border-border/50 bg-muted/30 grid place-items-center font-mono text-[9px] font-bold text-muted-foreground overflow-hidden"
+                              title={t.id}
+                            >
+                              <QrCode className="h-4 w-4" />
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <div className="space-y-0.5 min-w-0">
+                              <p className="font-semibold text-sm tracking-tight truncate max-w-[28ch]">
+                                {t.holderName}
+                              </p>
+                              <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                                {t.holderEmail && (
+                                  <span className="truncate max-w-[20ch] font-mono">
+                                    {t.holderEmail}
+                                  </span>
+                                )}
+                                {t.holderDoc && (
+                                  <span className="font-mono">
+                                    {t.holderDoc}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <div className="space-y-1">
+                              <p className="text-xs font-semibold truncate max-w-[18ch]">
+                                {t.ticketType?.name ?? '—'}
+                              </p>
+                              {t.ticketType?.category && (
+                                <Badge
+                                  variant={categoryBadgeVariant(
+                                    t.ticketType.category as TicketCategoryKey,
+                                  )}
+                                  className="text-[9px] uppercase h-4"
+                                >
+                                  {TICKET_CATEGORY_LABELS[
+                                    t.ticketType
+                                      .category as TicketCategoryKey
+                                  ] ?? t.ticketType.category}
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            {t.gate ? (
+                              <div className="flex items-center gap-2">
+                                <span className="inline-flex h-6 items-center gap-1.5 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 text-[10px] font-mono uppercase text-emerald-300 ring-1 ring-emerald-500/10">
+                                  <DoorOpen className="h-3 w-3" />
+                                  {t.gate.identifier}
+                                </span>
+                                <span className="text-xs truncate max-w-[14ch] text-muted-foreground">
+                                  {t.gate.name}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-[11px] text-muted-foreground/70 italic">
+                                Sem portão
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="py-3">
+                            {t.seat ? (
+                              <span className="inline-flex items-center rounded-md border border-border/60 bg-muted/30 px-2 py-0.5 text-[11px] font-mono font-semibold">
+                                {t.seat}
+                              </span>
+                            ) : (
+                              <span className="text-[11px] text-muted-foreground/70 italic">
+                                —
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="py-3 text-sm font-mono font-bold text-localis-event">
+                            {currencyBRL(Number(t.pricePaid || 0))}
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <div className="space-y-0.5">
+                              <p className="text-[11px] font-mono text-foreground/90">
+                                {t.createdAt
+                                  ? formatShortDT(t.createdAt)
+                                  : '—'}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                <Calendar className="h-3 w-3 inline mr-1 -mt-0.5" />
+                                {t.status === 'ACTIVE'
+                                  ? 'Disponível'
+                                  : TICKET_STATUS_LABELS[t.status]}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-3 text-right">
+                            <Badge
+                              variant={statusVariant(t.status)}
+                              className="text-[10px] uppercase tracking-wider"
+                            >
+                              {TICKET_STATUS_LABELS[t.status]}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </TabsContent>
+          )}
         </Tabs>
       </CardContent>
 
@@ -477,6 +794,36 @@ function GatesSkeleton() {
           <Skeleton className="h-3 w-1/2" />
         </div>
       ))}
+    </div>
+  );
+}
+
+function TicketsTableSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border/60 overflow-hidden bg-muted/10">
+      <div className="bg-muted/30 px-4 py-3 grid grid-cols-8 gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton key={i} className="h-4 w-full rounded" />
+        ))}
+      </div>
+      <div className="divide-y divide-border/40">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="px-4 py-3 grid grid-cols-8 gap-3 items-center">
+            <Skeleton className="h-9 w-9 rounded-lg" />
+            <div className="space-y-1.5 col-span-2">
+              <Skeleton className="h-4 w-full rounded" />
+              <Skeleton className="h-3 w-3/4 rounded" />
+            </div>
+            <Skeleton className="h-5 w-full rounded" />
+            <Skeleton className="h-6 w-full rounded" />
+            <Skeleton className="h-4 w-3/4 rounded" />
+            <Skeleton className="h-5 w-full rounded" />
+            <div className="flex justify-end">
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

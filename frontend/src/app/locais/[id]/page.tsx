@@ -16,6 +16,16 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Sheet,
   SheetContent,
@@ -23,6 +33,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   Building2,
   Home as HomeIcon,
@@ -36,8 +51,48 @@ import {
   ArrowRight,
   ChevronRight,
   PartyPopper,
+  Plus,
+  Search,
+  CheckCircle2,
+  Save,
 } from 'lucide-react';
 import { CategoryBadge } from '@/components/category-badge';
+import {
+  useAssignGateAllowedTicketTypesMutation,
+  useCreateGateMutation,
+  useDeleteGateMutation,
+  useGatesByVenue,
+  useUpdateGateMutation,
+} from '@/hooks/use-gates';
+import { useTicketTypesList } from '@/hooks/use-ticket-types';
+import type { GateSummary } from '@/lib/api/gates';
+import type { TicketTypeSummary } from '@/lib/api/ticket-types';
+import { TICKET_CATEGORY_LABELS, TicketCategoryKey } from '@/lib/api/ticket-types';
+import { cn } from '@/lib/utils';
+
+const createGateSchema = z.object({
+  name: z.string().min(2, 'Nome muito curto').max(120),
+  identifier: z.string().min(1, 'Identificador obrigatório').max(16),
+  description: z.string().max(255).optional().or(z.literal('')),
+});
+
+type CreateGateForm = z.infer<typeof createGateSchema>;
+
+function categoryBadgeVariant(c: TicketCategoryKey):
+  | 'default'
+  | 'secondary'
+  | 'outline' {
+  switch (c) {
+    case 'VIP':
+      return 'default';
+    case 'CORTESIA':
+      return 'secondary';
+    case 'MEIA':
+      return 'outline';
+    default:
+      return 'outline';
+  }
+}
 
 function formatBR(iso: string) {
   try {
@@ -106,6 +161,37 @@ export default function VenueDetailPage() {
   });
 
   const deleteVenue = useDeleteVenue();
+  const ticketTypes = useTicketTypesList(!!venue);
+  const gates = useGatesByVenue(venue?.id ?? null, { enabled: !!venue });
+  const createGateMut = useCreateGateMutation();
+  const updateGateMut = useUpdateGateMutation();
+  const deleteGateMut = useDeleteGateMutation();
+
+  const [gateSearch, setGateSearch] = React.useState('');
+  const [gateDialogMode, setGateDialogMode] = React.useState<
+    { mode: 'closed' } | { mode: 'create' } | { mode: 'edit'; item: GateSummary }
+  >({ mode: 'closed' });
+  const [gateDeleting, setGateDeleting] = React.useState<GateSummary | null>(null);
+
+  const filteredGates = React.useMemo(() => {
+    const items = gates.data?.items ?? [];
+    if (!gateSearch.trim()) return items;
+    const q = gateSearch.toLowerCase();
+    return items.filter(
+      (g) =>
+        g.name.toLowerCase().includes(q) ||
+        g.identifier.toLowerCase().includes(q) ||
+        (g.description ?? '').toLowerCase().includes(q),
+    );
+  }, [gates.data, gateSearch]);
+
+  const totalAllowedReleases = React.useMemo<number>(() => {
+    const items = gates.data?.items ?? [];
+    return items.reduce(
+      (acc, g) => acc + (g.ticketTypes?.length ?? 0),
+      0,
+    );
+  }, [gates.data]);
 
   return (
     <div className="container py-8 space-y-8">
@@ -207,7 +293,7 @@ export default function VenueDetailPage() {
           {/* Grid principal */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Ficha e contato */}
-            <Card className="rounded-3xl border-white/5 lg:col-span-2 overflow-hidden">
+            <Card className="rounded-3xl border-white/5 overflow-hidden">
               <CardHeader className="pb-4 pt-5 border-b border-border/50">
                 <CardTitle className="text-base flex items-center gap-2">
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
@@ -220,7 +306,7 @@ export default function VenueDetailPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6 space-y-5">
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <dl className="grid grid-cols-1 gap-4 text-sm">
                   <InfoRow label="Endereço" value={venue.address ?? '—'} />
                   <InfoRow
                     label="Cidade / UF"
@@ -258,53 +344,79 @@ export default function VenueDetailPage() {
                   />
                   <InfoRow
                     label="Portões de acesso"
-                    value={`${venue.gates.length} ${venue.gates.length === 1 ? 'portão' : 'portões'}`}
+                    value={`${(gates.data?.items ?? []).length} ${(gates.data?.items ?? []).length === 1 ? 'portão' : 'portões'} · ${totalAllowedReleases} ${totalAllowedReleases === 1 ? 'liberação' : 'liberações'}`}
                   />
                 </dl>
               </CardContent>
             </Card>
 
-            {/* Portões */}
-            <Card className="rounded-3xl border-white/5 overflow-hidden">
-              <CardHeader className="pb-4 pt-5 border-b border-border/50">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
-                    <DoorOpen className="h-3.5 w-3.5" />
-                  </span>
-                  Portões ({venue.gates.length})
-                </CardTitle>
-                <CardDescription>
-                  Acessos disponíveis para entrada do público.
-                </CardDescription>
+            {/* CRUD Portões + liberações */}
+            <Card className="rounded-3xl border-white/5 lg:col-span-2 overflow-hidden">
+              <CardHeader className="pb-4 pt-5 border-b border-border/50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/20">
+                      <DoorOpen className="h-3.5 w-3.5" />
+                    </span>
+                    Portões e acesso
+                    <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                      {gates.data?.items?.length ?? 0} cadastrados
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Crie portões (catracas) e libere quais tipos de ingresso podem
+                    entrar por cada um deles.
+                  </CardDescription>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                  <div className="relative flex-1 sm:max-w-[280px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      autoComplete="off"
+                      placeholder="Buscar portão por nome ou ID"
+                      value={gateSearch}
+                      onChange={(e) => setGateSearch(e.target.value)}
+                      className="pl-8 text-sm"
+                    />
+                  </div>
+                  <Button
+                    size="sm"
+                    type="button"
+                    onClick={() => setGateDialogMode({ mode: 'create' })}
+                    className="bg-gradient-to-r from-localis-venue to-emerald-700 hover:from-localis-venue hover:to-emerald-600 text-white shadow-lg shadow-emerald-900/20 whitespace-nowrap"
+                  >
+                    <Plus className="h-4 w-4 mr-1.5" /> Novo portão
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent className="p-5 space-y-2.5 max-h-[480px] overflow-y-auto">
-                {venue.gates.length === 0 ? (
+              <CardContent className="p-5 sm:p-6 space-y-4">
+                {gates.isLoading && (ticketTypes.isFetching || ticketTypes.isLoading) ? (
+                  <GatesSkeleton />
+                ) : (gates.data?.items?.length ?? 0) === 0 ? (
                   <EmptyBox
                     icon={<DoorOpen className="h-5 w-5 text-muted-foreground" />}
                     title="Nenhum portão cadastrado"
-                    description="Edite o local para incluir portões de acesso."
+                    description="Clique em Novo portão para criar catracas/entradas para o público."
+                  />
+                ) : filteredGates.length === 0 ? (
+                  <EmptyBox
+                    icon={<Search className="h-5 w-5 text-muted-foreground" />}
+                    title="Nenhum portão na busca"
+                    description="Tente outro termo, ou limpe o campo de busca."
                   />
                 ) : (
-                  venue.gates.map((g) => (
-                    <div
-                      key={g.id}
-                      className="group rounded-2xl border border-border/60 bg-muted/20 p-4 hover:bg-muted/30 hover:border-localis-venue/30 transition-colors"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-localis-venue/10 text-localis-venue ring-1 ring-localis-venue/30 font-mono font-bold text-xs shrink-0">
-                          {g.identifier.toUpperCase()}
-                        </span>
-                        <div className="min-w-0 space-y-1">
-                          <p className="text-sm font-semibold leading-tight">{g.name}</p>
-                          {g.description && (
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                              {g.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                  <div className="space-y-3">
+                    {filteredGates.map((g) => (
+                      <GateRow
+                        key={g.id}
+                        venueId={venue.id}
+                        item={g}
+                        allTicketTypes={ticketTypes.data?.items ?? []}
+                        onEdit={() => setGateDialogMode({ mode: 'edit', item: g })}
+                        onDelete={() => setGateDeleting(g)}
+                      />
+                    ))}
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -447,6 +559,45 @@ export default function VenueDetailPage() {
           await deleteVenue.mutateAsync(venue.id);
         }}
       />
+
+      {/* Gate Dialog (create/edit) */}
+      <GateDialog
+        open={gateDialogMode.mode !== 'closed'}
+        onOpenChange={(o) => !o && setGateDialogMode({ mode: 'closed' })}
+        initial={gateDialogMode.mode === 'edit' ? gateDialogMode.item : null}
+        venueId={venue?.id ?? null}
+      />
+
+      {/* Delete Gate */}
+      <ConfirmDeleteDialog
+        open={!!gateDeleting}
+        onOpenChange={(o) => !o && setGateDeleting(null)}
+        title="Excluir portão"
+        description={
+          gateDeleting ? (
+            <>
+              Tem certeza que deseja excluir o portão{' '}
+              <strong className="text-foreground">{gateDeleting.name}</strong>? As
+              liberações de tipos de ingresso serão removidas junto.
+            </>
+          ) : (
+            ''
+          )
+        }
+        itemLabel={
+          gateDeleting ? `${gateDeleting.identifier} · ${gateDeleting.name}` : ''
+        }
+        confirmButtonLabel="Excluir portão"
+        tone="danger"
+        onConfirm={async () => {
+          if (!gateDeleting) return;
+          await deleteGateMut.mutateAsync({
+            id: gateDeleting.id,
+            venueId: gateDeleting.venueId,
+          });
+          setGateDeleting(null);
+        }}
+      />
     </div>
   );
 }
@@ -549,5 +700,378 @@ function ErrorState({
         </Button>
       </CardContent>
     </Card>
+  );
+}
+
+function GatesSkeleton() {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className="rounded-2xl border border-border/60 bg-muted/10 p-4 space-y-3"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-10 rounded-md" />
+              <Skeleton className="h-5 w-40" />
+            </div>
+            <Skeleton className="h-6 w-28 rounded-full" />
+          </div>
+          <Skeleton className="h-3 w-1/2" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function GateDialog({
+  open,
+  onOpenChange,
+  initial,
+  venueId,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  initial: GateSummary | null;
+  venueId: string | null;
+}) {
+  const isEdit = !!initial;
+  const createMut = useCreateGateMutation();
+  const updateMut = useUpdateGateMutation();
+
+  const form = useForm<CreateGateForm>({
+    resolver: zodResolver(createGateSchema),
+    defaultValues: {
+      name: initial?.name ?? '',
+      identifier: initial?.identifier ?? '',
+      description: initial?.description ?? '',
+    },
+    mode: 'onTouched',
+  });
+
+  React.useEffect(() => {
+    if (!open) return;
+    form.reset({
+      name: initial?.name ?? '',
+      identifier: initial?.identifier ?? '',
+      description: initial?.description ?? '',
+    });
+  }, [open, initial, form]);
+
+  const busy = createMut.isPending || updateMut.isPending;
+
+  async function onSubmit(values: CreateGateForm) {
+    if (!venueId) return;
+    if (isEdit && initial) {
+      await updateMut.mutateAsync({
+        id: initial.id,
+        payload: {
+          name: values.name,
+          identifier: values.identifier,
+          description: values.description || undefined,
+        },
+      });
+    } else {
+      await createMut.mutateAsync({
+        venueId,
+        payload: {
+          name: values.name,
+          identifier: values.identifier,
+          description: values.description || undefined,
+        },
+      });
+    }
+    onOpenChange(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-localis-venue/60 to-emerald-900/60">
+              <DoorOpen className="h-4 w-4 text-emerald-50" />
+            </span>
+            {isEdit ? 'Editar portão' : 'Novo portão'}
+          </DialogTitle>
+          <DialogDescription>
+            O identificador aparece nas catracas e bilheterias (ex: A1, Pista Sul, VIP).
+            Deve ser único dentro do mesmo local.
+          </DialogDescription>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void form.handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="sm:col-span-2 space-y-2">
+              <Label htmlFor="g-name">Nome *</Label>
+              <Input
+                id="g-name"
+                placeholder="Ex: Portão Principal, Catraca A, Acesso VIP"
+                {...form.register('name')}
+              />
+              {form.formState.errors.name ? (
+                <p className="text-xs text-rose-400">
+                  {form.formState.errors.name.message}
+                </p>
+              ) : null}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="g-id">Identificador *</Label>
+              <Input
+                id="g-id"
+                className="font-mono uppercase tracking-wider"
+                placeholder="Ex: A1"
+                {...form.register('identifier')}
+              />
+              {form.formState.errors.identifier ? (
+                <p className="text-xs text-rose-400">
+                  {form.formState.errors.identifier.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="g-desc">Descrição (opcional)</Label>
+            <textarea
+              id="g-desc"
+              rows={3}
+              placeholder="Ex: Acesso pela rua lateral, aceita ingressos VIP e Camarote"
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              {...form.register('description')}
+            />
+            {form.formState.errors.description ? (
+              <p className="text-xs text-rose-400">
+                {String(form.formState.errors.description.message ?? '')}
+              </p>
+            ) : null}
+          </div>
+          <DialogFooter className="pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={busy}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={busy || !form.formState.isValid || !venueId}
+              className="bg-gradient-to-r from-localis-venue to-emerald-700 hover:from-localis-venue hover:to-emerald-600 text-white shadow-lg shadow-emerald-900/20"
+            >
+              {busy ? 'Salvando…' : isEdit ? 'Salvar alterações' : 'Criar portão'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function GateRow({
+  venueId,
+  item,
+  allTicketTypes,
+  onEdit,
+  onDelete,
+}: {
+  venueId: string;
+  item: GateSummary;
+  allTicketTypes: TicketTypeSummary[];
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const assignMut = useAssignGateAllowedTicketTypesMutation();
+  const allowedIdsRef = React.useMemo(
+    () => new Set((item.ticketTypes ?? []).map((t) => t.ticketType.id)),
+    [item.ticketTypes],
+  );
+  const [selected, setSelected] = React.useState<Set<string>>(allowedIdsRef);
+  const [dirty, setDirty] = React.useState(false);
+
+  React.useEffect(() => {
+    setSelected(allowedIdsRef);
+    setDirty(false);
+  }, [allowedIdsRef]);
+
+  function toggleOne(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    setDirty(true);
+  }
+
+  async function save() {
+    await assignMut.mutateAsync({
+      venueId,
+      gateId: item.id,
+      ticketTypeIds: Array.from(selected),
+    });
+    setDirty(false);
+  }
+
+  return (
+    <div className="rounded-2xl border border-border/60 bg-muted/10 overflow-hidden">
+      <div className="p-4 flex items-start gap-3 justify-between flex-wrap">
+        <div className="min-w-0 flex items-start gap-3">
+          <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-localis-venue/60 via-localis-venue/40 to-emerald-900/40 grid place-items-center ring-1 ring-white/10">
+            <DoorOpen className="h-5 w-5 text-emerald-100" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge
+                variant="outline"
+                className="font-mono text-localis-venue border-localis-venue/30 bg-localis-venue/10"
+              >
+                {item.identifier}
+              </Badge>
+              <p className="font-bold tracking-tight truncate max-w-[28ch]">
+                {item.name}
+              </p>
+            </div>
+            {item.description ? (
+              <p className="mt-1.5 text-xs text-muted-foreground line-clamp-1">
+                {item.description}
+              </p>
+            ) : null}
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {Array.from(selected).length === 0 ? (
+                <Badge variant="secondary" className="text-[10px] uppercase">
+                  Sem tipos liberados
+                </Badge>
+              ) : (
+                Array.from(selected).map((id) => {
+                  const t = allTicketTypes.find((x) => x.id === id);
+                  if (!t) return null;
+                  return (
+                    <Badge
+                      key={id}
+                      variant={categoryBadgeVariant(
+                        t.category as TicketCategoryKey,
+                      )}
+                      className="text-[10px]"
+                    >
+                      {t.name}
+                    </Badge>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEdit}
+            className="h-8 px-2.5"
+          >
+            <Pencil className="h-3.5 w-3.5 mr-1.5" /> Editar
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDelete}
+            className="h-8 px-2.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Excluir
+          </Button>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="px-4 py-4 sm:px-5 sm:py-4 space-y-3 bg-gradient-to-br from-transparent via-transparent to-localis-venue/5">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <CheckCircle2 className="h-3.5 w-3.5 text-localis-venue" />
+            Tipos liberados neste portão
+          </Label>
+          {dirty ? (
+            <Button
+              size="sm"
+              type="button"
+              onClick={() => void save()}
+              disabled={assignMut.isPending}
+              className="h-8 px-3 bg-localis-venue hover:bg-localis-venue/90 text-white shadow-md shadow-emerald-900/20"
+            >
+              <Save className="h-3.5 w-3.5 mr-1.5" />
+              {assignMut.isPending ? 'Salvando…' : 'Salvar liberações'}
+            </Button>
+          ) : (
+            <Badge variant="outline" className="text-[10px] uppercase">
+              Alterações são automáticas · basta clicar
+            </Badge>
+          )}
+        </div>
+        {allTicketTypes.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border/60 bg-muted/15 p-4 text-center">
+            <p className="text-xs font-semibold tracking-tight mb-0.5">
+              Nenhum tipo de ingresso criado
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              Primeiro crie tipos de ingresso (Inteira, VIP, Meia, etc).
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {allTicketTypes.map((tt) => {
+              const checked = selected.has(tt.id);
+              return (
+                <label
+                  key={tt.id}
+                  className={cn(
+                    'group flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-all',
+                    checked
+                      ? 'border-localis-venue ring-2 ring-localis-venue/25 bg-localis-venue/8'
+                      : 'border-border/60 bg-background/20 hover:bg-muted/30 hover:border-white/15',
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-border bg-muted/20 text-localis-venue focus:ring-localis-venue cursor-pointer accent-localis-venue"
+                    checked={checked}
+                    onChange={() => toggleOne(tt.id)}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-bold tracking-tight truncate">
+                        {tt.name}
+                      </p>
+                      <Badge
+                        variant={categoryBadgeVariant(
+                          tt.category as TicketCategoryKey,
+                        )}
+                        className="text-[9px] uppercase font-mono"
+                      >
+                        {TICKET_CATEGORY_LABELS[
+                          tt.category as TicketCategoryKey
+                        ] ?? tt.category}
+                      </Badge>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {tt.description
+                        ? tt.description.length > 90
+                          ? tt.description.slice(0, 87) + '…'
+                          : tt.description
+                        : 'Sem descrição'}
+                    </p>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

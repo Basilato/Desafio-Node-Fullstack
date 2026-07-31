@@ -359,8 +359,11 @@ export default function EventDetailPage() {
             </Card>
           </div>
 
-          {/* Tipos de ingresso + Portões (Pilar 5) */}
-          <EventTicketGateTabs venueId={event.venue?.id ?? null} />
+          {/* Tipos de ingresso + Portões + Ingressos (Pilar 5) */}
+          <EventTicketGateTabs
+            venueId={event.venue?.id ?? null}
+            eventId={eventId ?? null}
+          />
         </>
       )}
 

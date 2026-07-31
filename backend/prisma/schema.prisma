@@ -79,6 +79,7 @@ model Gate {
 
   venue       Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
   ticketTypes AllowedTicketType[]
+  tickets     Ticket[]
 
   @@unique([venueId, identifier])
   @@map("gates")
@@ -137,6 +138,7 @@ model Ticket {
   id           String   @id @default(cuid())
   eventId      String
   ticketTypeId String
+  gateId       String?
   holderName   String
   holderEmail  String?
   holderDoc    String?
@@ -149,7 +151,9 @@ model Ticket {
 
   event        Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
   ticketType   TicketType @relation(fields: [ticketTypeId], references: [id], onDelete: Restrict)
+  gate         Gate?      @relation(fields: [gateId], references: [id], onDelete: SetNull)
 
   @@index([eventId])
+  @@index([gateId])
   @@map("tickets")
 }

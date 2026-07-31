@@ -1,5 +1,6 @@
 import { apiFetch } from './http';
 import type { TicketTypeSummary } from './ticket-types';
+import type { GateSummary } from './gates';
 
 export type TicketStatus = 'ACTIVE' | 'USED' | 'CANCELLED' | 'REFUNDED';
 
@@ -14,7 +15,9 @@ export interface TicketItem {
   pricePaid: number;
   eventId: string;
   ticketTypeId: string;
+  gateId?: string | null;
   ticketType?: TicketTypeSummary;
+  gate?: GateSummary | null;
   createdAt: string;
   updatedAt?: string;
 }
@@ -47,8 +50,25 @@ export async function getEventCapacity(eventId: string) {
   return apiFetch<EventCapacity>(`/tickets/event/${eventId}/capacity`);
 }
 
-export async function listTicketsByEvent(eventId: string) {
-  return apiFetch<TicketsListResult>(`/tickets/event/${eventId}`);
+export interface ListTicketsByEventFilters {
+  gateId?: string;
+  status?: TicketStatus;
+  used?: boolean;
+}
+
+export async function listTicketsByEvent(
+  eventId: string,
+  filters?: ListTicketsByEventFilters,
+) {
+  const params = new URLSearchParams();
+  if (filters?.gateId) params.set('gateId', filters.gateId);
+  if (filters?.status) params.set('status', filters.status);
+  if (typeof filters?.used === 'boolean')
+    params.set('used', String(filters.used));
+  const qs = params.toString();
+  return apiFetch<TicketsListResult>(
+    `/tickets/event/${eventId}${qs ? `?${qs}` : ''}`,
+  );
 }
 
 export async function getEventTicketsBreakdown(eventId: string) {
@@ -69,6 +89,7 @@ export interface CreateTicketPayload {
   holderDoc?: string;
   seat?: string;
   pricePaid?: number;
+  gateId?: string;
 }
 
 export async function createTicket(payload: CreateTicketPayload) {

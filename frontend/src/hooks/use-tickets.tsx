@@ -9,6 +9,7 @@ import {
   updateTicket,
   type CreateTicketPayload,
   type EventCapacity,
+  type ListTicketsByEventFilters,
   type TicketItem,
   type TicketsListResult,
   type UpdateTicketPayload,
@@ -34,11 +35,16 @@ export function useEventCapacity(eventId: string | null | undefined, enabled = t
   });
 }
 
-export function useTicketsByEvent(eventId: string | null | undefined, enabled = true) {
+export function useTicketsByEvent(
+  eventId: string | null | undefined,
+  filters?: ListTicketsByEventFilters | null,
+  enabled = true,
+) {
   return useQuery<TicketsListResult>({
-    queryKey: ['tickets', 'list', eventId] as const,
-    queryFn: () => listTicketsByEvent(eventId!),
+    queryKey: ['tickets', 'list', eventId, filters] as const,
+    queryFn: () => listTicketsByEvent(eventId!, filters ?? undefined),
     staleTime: 1000 * 30,
+    refetchOnMount: true,
     enabled: enabled && !!eventId,
   });
 }

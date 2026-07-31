@@ -57,4 +57,13 @@ export class CreateTicketDto {
   @Min(0)
   @Max(999999)
   pricePaid?: number;
+
+  @ApiPropertyOptional({
+    example: 'seed-gate-A1',
+    description:
+      'Portão de entrada (catraca) associado a este ingresso. Quando fornecido, será validado: (a) o portão deve pertencer ao mesmo local do evento e (b) o tipo de ingresso deve estar liberado para este portão.',
+  })
+  @IsOptional()
+  @IsString()
+  gateId?: string;
 }

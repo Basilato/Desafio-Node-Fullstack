@@ -123,13 +123,29 @@ export async function apiFetch<T = unknown>(
     if (token) finalHeaders['Authorization'] = `Bearer ${token}`;
   }
 
+  const controller = new AbortController();
+  const timeoutMs = 10_000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   const fetchInit: RequestInit = {
     headers: finalHeaders,
     body: finalBody,
     ...(rest as RequestInit),
+    signal: controller.signal,
+    cache: 'no-store',
   };
 
-  const res = await fetch(buildUrl(path, params), fetchInit);
+  let res: Response;
+  try {
+    res = await fetch(buildUrl(path, params), fetchInit);
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new ApiError(0, null, 'Timeout ao comunicar com o servidor (10s).');
+    }
+    throw err;
+  }
+  clearTimeout(timeoutId);
 
   if (res.status === 401 && !skipAuth) {
     setStoredToken(null);
