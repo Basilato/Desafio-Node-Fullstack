@@ -17,17 +17,19 @@ async function bootstrap() {
     'http://localhost:3001',
     'http://127.0.0.1:3001',
   ];
-  const origins = process.env.CORS_ORIGIN
+  const envOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean)
-    : defaultOrigins;
+    : [];
+  const allowedOrigins = [...defaultOrigins, ...envOrigins];
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (origins.includes(origin)) return callback(null, true);
-      if (process.env.CORS_ORIGIN === undefined) {
-        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
-          return callback(null, true);
-        }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      if (origin.endsWith('.onrender.com')) return callback(null, true);
+      if (origin.endsWith('.railway.app')) return callback(null, true);
+      if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+        return callback(null, true);
       }
       callback(null, false);
     },
