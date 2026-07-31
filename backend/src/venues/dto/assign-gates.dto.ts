@@ -1,6 +1,23 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested, ArrayMinSize, ArrayMaxSize } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export class AssignOneGateAllowedTicketTypesDto {
+  @ApiPropertyOptional({
+    type: [String],
+    description:
+      'Tipos de ingresso liberados para este portão individual (substitui os anteriores)',
+    example: ['seed-inteira', 'seed-vip'],
+  })
+  @IsOptional()
+  @IsArray()
+  ticketTypeIds?: string[];
+}
 
 export class GateAssignmentDto {
   @ApiProperty({ example: 'seed-gate-A1' })

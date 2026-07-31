@@ -41,6 +41,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { CategoryBadge } from '@/components/category-badge';
+import { EventTicketGateTabs } from '@/components/event-ticket-gate-tabs';
 
 function formatBRDateTime(iso: string) {
   try {
@@ -357,6 +358,9 @@ export default function EventDetailPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Tipos de ingresso + Portões (Pilar 5) */}
+          <EventTicketGateTabs venueId={event.venue?.id ?? null} />
         </>
       )}
 

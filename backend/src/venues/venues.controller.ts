@@ -25,8 +25,7 @@ import {
 import { VenuesService } from './venues.service';
 import { CreateVenueDto } from './dto/create-venue.dto';
 import { UpdateVenueDto } from './dto/update-venue.dto';
-import { AssignAllowedTicketTypesDto } from '@/ticket-types/dto/update-ticket-type.dto';
-import { AssignGatesTicketTypesDto } from './dto/assign-gates.dto';
+import { AssignOneGateAllowedTicketTypesDto, AssignGatesTicketTypesDto } from './dto/assign-gates.dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator';
 import type { JwtUserPayload } from '@/auth/auth.service';
@@ -107,7 +106,7 @@ export class VenuesController {
   assignGateTicketTypes(
     @Param('venueId') venueId: string,
     @Param('gateId') gateId: string,
-    @Body() dto: AssignAllowedTicketTypesDto,
+    @Body() dto: AssignOneGateAllowedTicketTypesDto,
   ) {
     return this.venuesService.assignGateAllowedTicketTypes({
       venueId,

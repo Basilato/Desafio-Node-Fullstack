@@ -10,10 +10,10 @@ export class UpdateTicketTypeDto extends PartialType(
 export class AssignAllowedTicketTypesDto {
   @ApiPropertyOptional({
     type: [String],
-    description: 'IDs de TicketTypes liberados para este portão (substitui os anteriores)',
-    example: ['seed-inteira', 'seed-vip'],
+    description: 'IDs de portões (Gates) liberados para este tipo de ingresso (substitui os anteriores)',
+    example: ['seed-gate-A1', 'seed-gate-B2'],
   })
   @IsOptional()
   @IsArray()
-  ticketTypeIds?: string[];
+  gateIds?: string[];
 }

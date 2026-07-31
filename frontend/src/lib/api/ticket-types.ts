@@ -68,7 +68,7 @@ export async function deleteTicketType(id: string) {
 export async function assignTicketTypeGates(id: string, gateIds: string[]) {
   return apiFetch<AllowedGateRef[]>(`/ticket-types/${id}/gates`, {
     method: 'PUT',
-    body: { ticketTypeIds: gateIds },
+    body: { gateIds },
   });
 }
 

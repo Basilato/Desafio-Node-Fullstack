@@ -88,6 +88,6 @@ export class TicketTypesController {
     @Param('id') id: string,
     @Body() dto: AssignAllowedTicketTypesDto,
   ) {
-    return this.service.assignGates(id, dto.ticketTypeIds ?? []);
+    return this.service.assignGates(id, dto.gateIds ?? []);
   }
 }
